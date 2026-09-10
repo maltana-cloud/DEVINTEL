@@ -20,11 +20,21 @@ def test_orchestrator_contains_high_risk_scope_and_records_audit():
     assert any(item.event == "security.contained" for item in audit.history())
 
 
-def test_critical_detection_syncs_core_state_but_does_not_need_core_authority():
+def test_critical_scoped_detection_does_not_compromise_global_runtime():
     state = StateStore()
     orchestrator = SecurityOrchestrator(runtime_state=state)
 
     result = orchestrator.detect(SecurityEvent("credential_anomaly", ThreatLevel.CRITICAL, "provider:x", "unexpected use"))
+
+    assert result.state == SecurityState.CONTAINMENT
+    assert state.state == RuntimeState.NORMAL
+
+
+def test_critical_core_detection_syncs_global_runtime_state():
+    state = StateStore()
+    orchestrator = SecurityOrchestrator(runtime_state=state)
+
+    result = orchestrator.detect(SecurityEvent("core_anomaly", ThreatLevel.CRITICAL, "core", "foundational threat"))
 
     assert result.state == SecurityState.CONTAINMENT
     assert state.state == RuntimeState.CONTAINMENT
