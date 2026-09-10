@@ -4,11 +4,11 @@
 
 ## Current Milestone
 
-**System #3 — Truth & Security — in progress**
+**System #3 — Truth & Security — completed and verified**
 
 ## Project Rule
 
-DEVINTEL remains free-first, modular, verification-first, and bounded. System #3 is being built as a complete major system before moving to System #4.
+DEVINTEL remains free-first, modular, verification-first, and bounded. System #3 was built as a complete major system before moving to System #4.
 
 ## Completed
 
@@ -21,11 +21,17 @@ DEVINTEL remains free-first, modular, verification-first, and bounded. System #3
 - [x] Truth assessment contract and conservative evidence handling
 - [x] Fail-closed security policy and external-input trust boundary
 - [x] Scoped containment, capability revocation, recovery verification, and safe-degraded mode
-- [x] Initial System #3 hardening tests
+- [x] Security-event orchestration integrated with Core event/audit boundaries
+- [x] Global runtime containment escalation for explicit `core` incidents
+- [x] Scoped incident isolation so channel/provider incidents do not compromise unrelated runtime state
+- [x] Direct `NORMAL -> CONTAINMENT` emergency transition for global security incidents
+- [x] Recovery/restoration runtime synchronization for the explicit `core` scope
+- [x] System #3 isolation and orchestration hardening tests
+- [x] Full CI verification on the System #3 branch
 
 ## Current Work
 
-System #3 is being integrated and hardened. Remaining work includes deeper integration with Core Intelligence state/permissions/audit, security-event orchestration, contradiction/freshness expansion, broader isolation tests, and full CI verification.
+No unfinished System #3 implementation is known at this checkpoint. System #4 — Conversation & Memory — is the next milestone.
 
 ## Last Verified Research Commit
 
@@ -33,7 +39,7 @@ System #3 is being integrated and hardened. Remaining work includes deeper integ
 
 ## Test Status
 
-Research completion checkpoint is green in CI (run #65). System #3 branch changes have not yet received a full CI verification.
+System #3 branch CI is green. Latest verified workflow run is tests run #80 on commit `3a437b6db7370803edfc3f7325188f566e66fb3e`, with a successful test job. The preceding push run #79 for the same commit was also successful.
 
 ## Known Architecture Notes
 
@@ -44,6 +50,7 @@ Research completion checkpoint is green in CI (run #65). System #3 branch change
 - External content can never grant DEVINTEL authority or execution permissions.
 - Security lifecycle follows DETECT → CONTAIN → ISOLATE → UNDERSTAND → RECOVER → VERIFY → LEARN.
 - Intelligence is separate from authority.
+- Scoped containment is isolated by component; global runtime containment requires the explicit `core` scope.
 - Monetization remains a System #8 concern.
 
 ## Handoff Protocol
@@ -54,21 +61,22 @@ Every AI must leave a truthful checkpoint before a usage limit, handoff, or cont
 
 ## Changed Files In This Completion Pass
 
+- `devintel/core/state.py`
 - `devintel/modules/security/__init__.py`
 - `devintel/modules/security/contracts.py`
 - `devintel/modules/security/truth.py`
 - `devintel/modules/security/policy.py`
 - `devintel/modules/security/containment.py`
+- `devintel/modules/security/orchestrator.py`
 - `tests/test_security_truth.py`
+- `tests/test_security_orchestrator.py`
 - `DEVINTEL_STATUS.md`
 
 ## Remaining Work
 
-1. Integrate System #3 with existing core state, permission, event, and audit contracts without duplication or authority bypass.
-2. Add security-event detection/orchestration and quiet owner-visible observability hooks.
-3. Expand contradiction, freshness, provenance/trust, isolation, and recovery verification tests.
-4. Run the full CI suite and fix every failure before declaring System #3 complete.
-5. Update this checkpoint with the verified completion commit before moving to System #4.
+1. Merge the verified System #3 branch into `main`.
+2. Begin System #4 — Conversation & Memory only after the System #3 merge is confirmed.
+3. Preserve all System #3 security contracts and isolation boundaries in later systems.
 
 ## Important Architectural Decisions
 
@@ -76,6 +84,8 @@ Every AI must leave a truthful checkpoint before a usage limit, handoff, or cont
 - External text/data is always untrusted and cannot become authority through prompt-like instructions.
 - Security policy is fail-closed.
 - Containment is scoped so one affected component does not automatically stop unrelated components.
+- Only the explicit `core` security scope may synchronize global runtime containment/recovery state.
+- The global state machine permits direct `NORMAL -> CONTAINMENT` for emergency security escalation; returning from containment still requires recovery.
 - Capabilities are revoked during containment/safe-degraded states.
 - Restoration requires explicit verification checks.
 - No paid service or unrestricted credential access is introduced by System #3.
@@ -88,14 +98,15 @@ Every AI must leave a truthful checkpoint before a usage limit, handoff, or cont
 - Foundational security, owner-control, trust, and recovery boundaries must not be silently rewritten.
 - No unrestricted self-modification.
 - Security should remain observable to its authorized owner but inconspicuous to everyone else.
+- A compromised channel/provider must not automatically compromise core, unrelated channels, owner control, or revenue systems.
 
 ## Latest Commit
 
-`ed07d930d4f4c03347987e77bcfe758a95c1ceb3` — initial System #3 hardening tests.
+`3a437b6db7370803edfc3f7325188f566e66fb3e` — security orchestration and scoped/global containment hardening. Status documentation is being recorded in the following checkpoint commit.
 
 ## Next Action
 
-Continue System #3 integration/hardening, then run the full CI suite. Do not declare System #3 complete until CI is green and this file records the verified result.
+Merge the verified System #3 pull request into `main`. After the merge is confirmed, move to System #4 — Conversation & Memory. Do not introduce unrelated project work.
 
 ## AI Handoff Template
 
