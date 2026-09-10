@@ -1,6 +1,12 @@
+from datetime import datetime, timezone
+
+import pytest
+
+from devintel.core.audit import AuditLog
+from devintel.core.events import EventBus
 from devintel.modules.conversation import (
-    ConversationEngine, ConversationMessage, ConversationScope, InMemoryMemoryStore,
-    MemoryEntry, MemoryKind, SQLiteMemoryStore,
+    ConversationEngine, ConversationMessage, ConversationScope, ConversationService,
+    InMemoryMemoryStore, MemoryEntry, MemoryKind, MemoryPolicy, SQLiteMemoryStore,
 )
 
 
@@ -39,7 +45,6 @@ def test_sqlite_memory_persists_and_isolates_scope(tmp_path):
     entry = MemoryEntry("owner", ConversationScope.OWNER, MemoryKind.PREFERENCE, "prefers concise replies")
     store.add(entry)
     store.close()
-
     reopened = SQLiteMemoryStore(path)
     loaded = reopened.get(entry.memory_id)
     assert loaded == entry
@@ -49,9 +54,39 @@ def test_sqlite_memory_persists_and_isolates_scope(tmp_path):
 
 
 def test_invalid_memory_confidence_is_rejected():
-    try:
+    with pytest.raises(ValueError):
         MemoryEntry("a", ConversationScope.PRIVATE, MemoryKind.FACT, "x", confidence=1.1)
-    except ValueError:
-        pass
-    else:
-        raise AssertionError("invalid confidence must fail closed")
+
+
+def test_policy_rejects_authority_and_oversized_memory():
+    policy = MemoryPolicy(max_content_chars=5)
+    with pytest.raises(ValueError):
+        policy.validate_write(MemoryEntry("a", ConversationScope.PRIVATE, MemoryKind.FACT, "too long"))
+    with pytest.raises(PermissionError):
+        policy.validate_write(MemoryEntry("a", ConversationScope.PRIVATE, MemoryKind.FACT, "ok", metadata={"authority": "true"}))
+
+
+def test_decision_memory_requires_explicit_policy():
+    entry = MemoryEntry("a", ConversationScope.PRIVATE, MemoryKind.DECISION, "do this")
+    with pytest.raises(PermissionError):
+        MemoryPolicy().validate_write(entry)
+    MemoryPolicy(allow_decisions=True).validate_write(entry)
+
+
+def test_service_audits_success_and_failure_without_authority_bypass():
+    events, audit = EventBus(), AuditLog()
+    service = ConversationService(events=events, audit=audit)
+    service.remember(MemoryEntry("a", ConversationScope.PRIVATE, MemoryKind.FACT, "likes Python"))
+    response = service.receive(ConversationMessage("a", ConversationScope.PRIVATE, "u", "Python"), lambda *_: "hello")
+    assert response.text == "hello"
+    assert [e.name for e in events.history()] == ["memory.written", "conversation.responded"]
+    with pytest.raises(RuntimeError):
+        service.receive(ConversationMessage("a", ConversationScope.PRIVATE, "u", "fail"), lambda *_: (_ for _ in ()).throw(RuntimeError()))
+    assert audit.history()[-1].event == "conversation.failed"
+    assert audit.history()[-1].success is False
+
+
+def test_expiry_contract_rejects_non_future_timestamp():
+    now = datetime.now(timezone.utc)
+    with pytest.raises(ValueError):
+        MemoryEntry("a", ConversationScope.PRIVATE, MemoryKind.FACT, "x", created_at=now, expires_at=now)
