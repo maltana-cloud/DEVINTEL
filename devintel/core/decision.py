@@ -16,9 +16,9 @@ class Decision:
 
 
 class DecisionEngine:
-    """Ranks proposed work; it never grants authority by itself."""
+    """Ranks proposed work; authority remains with the permission policy."""
 
-    def decide(self, request: ActionRequest, *, value: float = 0.0) -> Decision:
+    def decide(self, request: ActionRequest, *, value: float = 0.0, owner_approved: bool = False) -> Decision:
         value = max(0.0, min(1.0, float(value)))
         risk_penalty = {
             ActionRisk.LOW: 0.0,
@@ -27,8 +27,8 @@ class DecisionEngine:
             ActionRisk.CRITICAL: 1.0,
         }[request.risk]
         score = round(value - risk_penalty, 4)
-        if request.risk in {ActionRisk.HIGH, ActionRisk.CRITICAL}:
+        if request.risk in {ActionRisk.HIGH, ActionRisk.CRITICAL} and not owner_approved:
             return Decision(request.action, False, score, "owner approval is required")
-        if score < 0:
+        if score < 0 and not owner_approved:
             return Decision(request.action, False, score, "risk outweighs expected value")
         return Decision(request.action, True, score, "action is eligible for permission check")
