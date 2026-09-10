@@ -41,7 +41,7 @@ class Orchestrator:
         self.runtime.increment("requests.total")
         self.record_event(Event("action.requested", {"action": request.action}))
         try:
-            decision = self.decisions.decide(request, value=value)
+            decision = self.decisions.decide(request, value=value, owner_approved=owner_approved)
             if not decision.allowed:
                 self.runtime.increment("requests.rejected")
                 return self.result(request, success=False, message=decision.reason)
