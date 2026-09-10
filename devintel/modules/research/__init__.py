@@ -6,14 +6,16 @@ from .limits import ResearchLimits
 from .normalization import normalize_content, normalize_text, normalize_title
 from .opportunities import OpportunityCandidate
 from .persistent_store import SQLiteResearchStore
-from .pipeline import ResearchBatch, ResearchPipeline, SourceProvider
+from .pipeline import ResearchBatch, ResearchPipeline, ResearchRoute, SourceProvider
 from .providers import RSSProvider, StaticProvider
 from .store import InMemoryResearchStore, ResearchStore
+from .verification import ProvenanceVerifier, ResearchVerifier, VerificationResult
 
 __all__ = [
     "ResearchCandidate", "ResearchDocument", "ResearchObservation", "canonicalize_url", "content_digest",
     "Claim", "Entity", "Relationship", "ResearchLimits",
     "normalize_content", "normalize_text", "normalize_title", "OpportunityCandidate",
-    "ResearchBatch", "ResearchPipeline", "SourceProvider", "RSSProvider", "StaticProvider",
+    "ResearchBatch", "ResearchPipeline", "ResearchRoute", "SourceProvider", "RSSProvider", "StaticProvider",
     "ResearchStore", "InMemoryResearchStore", "SQLiteResearchStore",
+    "ResearchVerifier", "ProvenanceVerifier", "VerificationResult",
 ]
