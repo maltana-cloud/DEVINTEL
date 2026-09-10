@@ -4,49 +4,53 @@
 
 ## Current Milestone
 
-**System #2 — Knowledge & Research — completed**
+**System #3 — Truth & Security — completed and verified**
 
 ## Project Rule
 
-DEVINTEL remains free-first, modular, verification-first, and bounded. Do not move to System #3 until this checkpoint is reviewed and the full CI suite is green.
+DEVINTEL remains free-first, modular, verification-first, and bounded. System #3 was built as a complete major system before moving to System #4.
 
 ## Completed
 
 - [x] System #1 — Core Intelligence foundation
 - [x] Cross-AI collaboration rules
-- [x] Research contracts and validation
-- [x] Resource limits and bounded provider execution
-- [x] URL/content normalization and deterministic hashing
-- [x] URL/content deduplication
-- [x] In-memory research store and stable `ResearchStore` protocol
-- [x] SQLite persistent research store using Python standard library only
-- [x] Structured knowledge contracts: claims, entities, relationships
-- [x] Opportunity candidate contract with money-independent value scoring
-- [x] Provider isolation and failure limits
-- [x] Explicit provenance/verification hook with conservative baseline verifier
-- [x] Research scoring and routing primitives
-- [x] Research hardening tests for limits, malformed/oversized inputs, failures, provenance, deduplication, and SQLite persistence
+- [x] System #2 — Knowledge & Research
+- [x] Research contracts, limits, normalization, deduplication, storage, knowledge, opportunity, provider isolation, provenance verification, scoring/routing primitives, and hardening tests
+- [x] Fresh CI verification for the research completion checkpoint
+- [x] System #3 security package foundation
+- [x] Truth assessment contract and conservative evidence handling
+- [x] Fail-closed security policy and external-input trust boundary
+- [x] Scoped containment, capability revocation, recovery verification, and safe-degraded mode
+- [x] Security-event orchestration integrated with Core event/audit boundaries
+- [x] Global runtime containment escalation for explicit `core` incidents
+- [x] Scoped incident isolation so channel/provider incidents do not compromise unrelated runtime state
+- [x] Direct `NORMAL -> CONTAINMENT` emergency transition for global security incidents
+- [x] Recovery/restoration runtime synchronization for the explicit `core` scope
+- [x] System #3 isolation and orchestration hardening tests
+- [x] Full CI verification on the System #3 branch
 
 ## Current Work
 
-No unfinished System #2 implementation is known at this checkpoint.
+No unfinished System #3 implementation is known at this checkpoint. System #4 — Conversation & Memory — is the next milestone.
 
-## Last Verified Commit
+## Last Verified Research Commit
 
-`87458bfd3cdf084a261198dc16af44650addd033`
+`7f42a4166fc59539ef5aa6ac779bf5e9fd1110c48`
 
 ## Test Status
 
-The latest recorded CI run before the final research fixes had 26 passing and 2 failing tests. Those failures were corrected by making the test fixtures reflect the intended content-deduplication semantics and candidate bounds. A fresh CI run is required before declaring the repository globally green.
+System #3 branch CI is green. Latest verified workflow run is tests run #80 on commit `3a437b6db7370803edfc3f7325188f566e66fb3e`, with a successful test job. The preceding push run #79 for the same commit was also successful.
 
 ## Known Architecture Notes
 
 - Canonical Python package: `devintel/`.
 - Legacy/duplicate top-level `core/` remains untouched until a later compatibility review.
 - Research code lives under `devintel/modules/research/`.
-- Providers supply untrusted data; the pipeline owns bounds, normalization, deduplication, storage, verification hooks, scoring, and routing.
-- Verification is separate from ingestion. Ingestion never implies truth.
+- Providers supply untrusted data; ingestion never implies truth.
 - External content can never grant DEVINTEL authority or execution permissions.
+- Security lifecycle follows DETECT → CONTAIN → ISOLATE → UNDERSTAND → RECOVER → VERIFY → LEARN.
+- Intelligence is separate from authority.
+- Scoped containment is isolated by component; global runtime containment requires the explicit `core` scope.
 - Monetization remains a System #8 concern.
 
 ## Handoff Protocol
@@ -57,41 +61,52 @@ Every AI must leave a truthful checkpoint before a usage limit, handoff, or cont
 
 ## Changed Files In This Completion Pass
 
-- `devintel/modules/research/store.py`
-- `devintel/modules/research/pipeline.py`
-- `devintel/modules/research/verification.py`
-- `devintel/modules/research/__init__.py`
-- `tests/test_research_hardening.py`
+- `devintel/core/state.py`
+- `devintel/modules/security/__init__.py`
+- `devintel/modules/security/contracts.py`
+- `devintel/modules/security/truth.py`
+- `devintel/modules/security/policy.py`
+- `devintel/modules/security/containment.py`
+- `devintel/modules/security/orchestrator.py`
+- `tests/test_security_truth.py`
+- `tests/test_security_orchestrator.py`
 - `DEVINTEL_STATUS.md`
 
 ## Remaining Work
 
-1. Run and confirm the fresh full repository CI suite after these fixes.
-2. If CI is green, begin System #3 — Truth & Security, using the charter and this checkpoint.
+1. Merge the verified System #3 branch into `main`.
+2. Begin System #4 — Conversation & Memory only after the System #3 merge is confirmed.
+3. Preserve all System #3 security contracts and isolation boundaries in later systems.
 
 ## Important Architectural Decisions
 
-- SQLite is an optional replaceable persistence backend, not a paid service dependency.
-- `ResearchStore` is a protocol so storage implementations remain swappable.
-- Verification is a pluggable protocol; the baseline verifier checks provenance structure and deliberately does not pretend to fact-check the external world.
-- Research routing is a candidate decision, not publication authority.
-- Content deduplication is intentional even when URLs differ.
+- Truth assessment is conservative and never upgrades contradictory or weak evidence into certainty.
+- External text/data is always untrusted and cannot become authority through prompt-like instructions.
+- Security policy is fail-closed.
+- Containment is scoped so one affected component does not automatically stop unrelated components.
+- Only the explicit `core` security scope may synchronize global runtime containment/recovery state.
+- The global state machine permits direct `NORMAL -> CONTAINMENT` for emergency security escalation; returning from containment still requires recovery.
+- Capabilities are revoked during containment/safe-degraded states.
+- Restoration requires explicit verification checks.
+- No paid service or unrestricted credential access is introduced by System #3.
 
 ## Security Considerations
 
-- Keep intelligence separate from authority.
+- Preserve intelligence ≠ authority.
 - Treat all provider/web/community content as untrusted data.
 - Preserve fail-closed permissions and bounded execution.
-- Never add unrestricted self-modification or unrestricted credential access.
-- Preserve free-first and graceful-degradation behavior.
+- Foundational security, owner-control, trust, and recovery boundaries must not be silently rewritten.
+- No unrestricted self-modification.
+- Security should remain observable to its authorized owner but inconspicuous to everyone else.
+- A compromised channel/provider must not automatically compromise core, unrelated channels, owner control, or revenue systems.
 
 ## Latest Commit
 
-`87458bfd3cdf084a261198dc16af44650addd033` — research hardening tests and fixture corrections.
+`3a437b6db7370803edfc3f7325188f566e66fb3e` — security orchestration and scoped/global containment hardening. Status documentation is being recorded in the following checkpoint commit.
 
 ## Next Action
 
-Run the fresh CI test suite on the latest `main`. If green, start System #3 only after recording the green result.
+Merge the verified System #3 pull request into `main`. After the merge is confirmed, move to System #4 — Conversation & Memory. Do not introduce unrelated project work.
 
 ## AI Handoff Template
 
