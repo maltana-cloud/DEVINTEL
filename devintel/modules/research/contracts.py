@@ -1,7 +1,7 @@
 """Stable contracts for source discovery and research ingestion.
 
-External content is treated strictly as data. Nothing in a document or source
-may become a DEVINTEL instruction or permission grant.
+External content is untrusted data. It can never grant DEVINTEL authority,
+change policy, or become an execution instruction.
 """
 
 from __future__ import annotations
@@ -16,11 +16,10 @@ from urllib.parse import urldefrag, urlsplit, urlunsplit
 def canonicalize_url(url: str) -> str:
     if not isinstance(url, str) or not url.strip():
         raise ValueError("url is required")
-    raw = url.strip()
-    parts = urlsplit(raw)
-    if parts.scheme.lower() not in {"http", "https"} or not parts.netloc:
-        raise ValueError("url must be an absolute HTTP(S) URL")
+    parts = urlsplit(url.strip())
     scheme = parts.scheme.lower()
+    if scheme not in {"http", "https"} or not parts.netloc:
+        raise ValueError("url must be an absolute HTTP(S) URL")
     host = parts.hostname.lower() if parts.hostname else ""
     if not host:
         raise ValueError("url host is required")
@@ -30,8 +29,13 @@ def canonicalize_url(url: str) -> str:
         netloc = f"{host}:{port}"
     path = parts.path or "/"
     path = path.rstrip("/") or "/"
-    canonical = urlunsplit((scheme, netloc, path, parts.query, ""))
-    return urldefrag(canonical)[0]
+    return urldefrag(urlunsplit((scheme, netloc, path, parts.query, "")))[0]
+
+
+def content_digest(content: str) -> str:
+    if not isinstance(content, str) or not content.strip():
+        raise ValueError("content is required")
+    return sha256(content.strip().encode("utf-8")).hexdigest()
 
 
 @dataclass(frozen=True)
@@ -63,8 +67,7 @@ class ResearchDocument:
             raise ValueError("title is required")
         if not isinstance(self.content, str) or not self.content.strip():
             raise ValueError("content is required")
-        digest = sha256(self.content.strip().encode("utf-8")).hexdigest()
-        object.__setattr__(self, "content_hash", digest)
+        object.__setattr__(self, "content_hash", content_digest(self.content))
 
 
 @dataclass(frozen=True)
@@ -78,7 +81,11 @@ class ResearchObservation:
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "document_url", canonicalize_url(self.document_url))
-        if not self.kind.strip() or not self.value.strip():
-            raise ValueError("observation kind and value are required")
-        if not 0.0 <= float(self.confidence) <= 1.0:
+        if not isinstance(self.kind, str) or not self.kind.strip():
+            raise ValueError("observation kind is required")
+        if not isinstance(self.value, str) or not self.value.strip():
+            raise ValueError("observation value is required")
+        confidence = float(self.confidence)
+        if not 0.0 <= confidence <= 1.0:
             raise ValueError("confidence must be between 0 and 1")
+        object.__setattr__(self, "confidence", confidence)
