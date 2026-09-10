@@ -86,7 +86,6 @@ def test_service_audits_success_and_failure_without_authority_bypass():
     assert audit.history()[-1].success is False
 
 
-def test_expiry_contract_rejects_non_future_timestamp():
-    now = datetime.now(timezone.utc)
+def test_message_requires_timezone_aware_timestamp():
     with pytest.raises(ValueError):
-        MemoryEntry("a", ConversationScope.PRIVATE, MemoryKind.FACT, "x", created_at=now, expires_at=now)
+        ConversationMessage("a", ConversationScope.PRIVATE, "u", "x", created_at=datetime.now())
