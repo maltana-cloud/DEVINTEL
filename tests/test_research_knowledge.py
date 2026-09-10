@@ -18,9 +18,10 @@ def test_normalization_is_deterministic():
 
 def test_pipeline_normalizes_before_storage():
     document = ResearchDocument("https://example.com/item", "  Example   ", "  hello\n world ")
-    result = ResearchPipeline().run(StaticProvider([document]), "example")
+    pipeline = ResearchPipeline()
+    result = pipeline.run(StaticProvider([document]), "example")
     assert result.stored == 1
-    stored = ResearchPipeline().store.documents()[0]
+    stored = pipeline.store.documents()[0]
     assert stored.title == "Example"
     assert stored.content == "hello world"
 
