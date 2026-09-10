@@ -1,4 +1,4 @@
-"""Deterministic task planning primitives."""
+"""Deterministic task-planning primitives."""
 
 from __future__ import annotations
 
@@ -25,14 +25,16 @@ class Planner:
     """Creates explicit plans without executing them."""
 
     def plan(self, task_id: str, goal: str, steps: list[PlanStep] | tuple[PlanStep, ...]) -> Plan:
-        if not task_id.strip() or not goal.strip():
-            raise ValueError("task_id and goal are required")
+        if not isinstance(task_id, str) or not task_id.strip():
+            raise ValueError("task_id is required")
+        if not isinstance(goal, str) or not goal.strip():
+            raise ValueError("goal is required")
         if not steps:
             raise ValueError("a plan must contain at least one step")
         seen: set[str] = set()
         normalized: list[PlanStep] = []
         for step in steps:
-            if not step.id or not step.action:
+            if not isinstance(step, PlanStep) or not step.id.strip() or not step.action.strip():
                 raise ValueError("every plan step requires an id and action")
             if step.id in seen:
                 raise ValueError(f"duplicate plan step: {step.id}")
