@@ -1,5 +1,6 @@
 """Public API for the DEVINTEL Core Intelligence runtime."""
 
+from .audit import AuditLog, AuditRecord
 from .contracts import ActionRequest, ActionResult, ActionRisk, Confidence, Event, IntelligenceItem, Source
 from .decision import Decision, DecisionEngine
 from .events import EventBus, RuntimeEvent
@@ -12,4 +13,5 @@ __all__ = [
     "ActionRequest", "ActionResult", "ActionRisk", "Confidence", "Event", "IntelligenceItem", "Source",
     "Decision", "DecisionEngine", "EventBus", "RuntimeEvent", "Orchestrator",
     "PermissionDenied", "PermissionPolicy", "RuntimeContext", "InvalidStateTransition", "RuntimeState", "StateStore",
+    "AuditLog", "AuditRecord",
 ]
