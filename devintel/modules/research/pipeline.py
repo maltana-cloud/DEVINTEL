@@ -1,7 +1,7 @@
 """Provider-isolated research pipeline.
 
-Providers only supply candidates/documents. The pipeline owns normalization,
-deduplication, storage and observation extraction hooks.
+Providers supply data only. The pipeline owns bounds, normalization,
+deduplication, storage, and observation creation.
 """
 
 from __future__ import annotations
@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from typing import Protocol
 
 from .contracts import ResearchCandidate, ResearchDocument, ResearchObservation
+from .limits import ResearchLimits
 from .store import InMemoryResearchStore
 
 
@@ -24,35 +25,50 @@ class ResearchBatch:
     ingested: int
     duplicates: int
     stored: int
+    invalid_candidates: int = 0
+    provider_failures: int = 0
 
 
 class ResearchPipeline:
-    """Runs DISCOVER -> INGEST -> NORMALIZE -> DEDUPLICATE -> STORE."""
+    """Runs bounded DISCOVER -> INGEST -> NORMALIZE -> DEDUPLICATE -> STORE."""
 
-    def __init__(self, store: InMemoryResearchStore | None = None) -> None:
+    def __init__(self, store: InMemoryResearchStore | None = None, limits: ResearchLimits | None = None) -> None:
         self.store = store or InMemoryResearchStore()
+        self.limits = limits or ResearchLimits()
 
     def run(self, provider: SourceProvider, query: str) -> ResearchBatch:
         if not isinstance(query, str) or not query.strip():
             raise ValueError("query is required")
         candidates = provider.discover(query.strip())
-        ingested = 0
-        duplicates = 0
-        stored = 0
-        for candidate in candidates:
+        if not isinstance(candidates, list):
+            raise TypeError("provider.discover must return a list")
+        discovered = min(len(candidates), self.limits.max_candidates)
+        invalid = 0
+        failures = 0
+        ingested = duplicates = stored = 0
+        for candidate in candidates[:self.limits.max_candidates]:
             if not isinstance(candidate, ResearchCandidate):
+                invalid += 1
                 continue
             try:
                 document = provider.ingest(candidate)
+                if not isinstance(document, ResearchDocument):
+                    invalid += 1
+                    continue
+                if len(document.content) > self.limits.max_document_chars:
+                    invalid += 1
+                    continue
             except Exception:
-                # One bad provider item must not take down the research run.
+                failures += 1
+                if failures >= self.limits.max_provider_failures:
+                    break
                 continue
             ingested += 1
             if self.store.add_document(document):
                 stored += 1
             else:
                 duplicates += 1
-        return ResearchBatch(len(candidates), ingested, duplicates, stored)
+        return ResearchBatch(discovered, ingested, duplicates, stored, invalid, failures)
 
     def extract_observation(
         self,
@@ -63,12 +79,6 @@ class ResearchPipeline:
         confidence: float,
         evidence: tuple[str, ...] = (),
     ) -> ResearchObservation:
-        observation = ResearchObservation(
-            document_url=document.url,
-            kind=kind,
-            value=value,
-            confidence=confidence,
-            evidence=evidence,
-        )
+        observation = ResearchObservation(document_url=document.url, kind=kind, value=value, confidence=confidence, evidence=evidence)
         self.store.add_observation(observation)
         return observation
