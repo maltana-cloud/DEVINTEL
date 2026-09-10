@@ -1,8 +1,4 @@
-"""Provider-isolated research pipeline.
-
-Providers supply data only. The pipeline owns bounds, normalization,
-deduplication, storage, and observation creation.
-"""
+"""Provider-isolated research pipeline with explicit verification and scoring."""
 
 from __future__ import annotations
 
@@ -12,7 +8,8 @@ from typing import Protocol
 from .contracts import ResearchCandidate, ResearchDocument, ResearchObservation
 from .limits import ResearchLimits
 from .normalization import normalize_content, normalize_title
-from .store import ResearchStore
+from .store import InMemoryResearchStore, ResearchStore
+from .verification import ProvenanceVerifier, ResearchVerifier, VerificationResult
 
 
 class SourceProvider(Protocol):
@@ -28,14 +25,31 @@ class ResearchBatch:
     stored: int
     invalid_candidates: int = 0
     provider_failures: int = 0
+    observations: int = 0
+    verified: int = 0
+    routed: int = 0
+
+
+@dataclass(frozen=True)
+class ResearchRoute:
+    document_url: str
+    destination: str
+    score: float
+    reason: str
 
 
 class ResearchPipeline:
-    """Runs bounded DISCOVER -> INGEST -> NORMALIZE -> DEDUPLICATE -> STORE."""
+    """Runs bounded DISCOVER -> INGEST -> NORMALIZE -> DEDUPLICATE -> EXTRACT -> VERIFY -> SCORE -> ROUTE."""
 
-    def __init__(self, store: ResearchStore | None = None, limits: ResearchLimits | None = None) -> None:
+    def __init__(
+        self,
+        store: ResearchStore | None = None,
+        limits: ResearchLimits | None = None,
+        verifier: ResearchVerifier | None = None,
+    ) -> None:
         self.store = store or InMemoryResearchStore()
         self.limits = limits or ResearchLimits()
+        self.verifier = verifier or ProvenanceVerifier()
 
     def run(self, provider: SourceProvider, query: str) -> ResearchBatch:
         if not isinstance(query, str) or not query.strip():
@@ -44,9 +58,7 @@ class ResearchPipeline:
         if not isinstance(candidates, list):
             raise TypeError("provider.discover must return a list")
         discovered = min(len(candidates), self.limits.max_candidates)
-        invalid = 0
-        failures = 0
-        ingested = duplicates = stored = 0
+        invalid = failures = ingested = duplicates = stored = 0
         for candidate in candidates[:self.limits.max_candidates]:
             if not isinstance(candidate, ResearchCandidate):
                 invalid += 1
@@ -89,10 +101,27 @@ class ResearchPipeline:
         confidence: float,
         evidence: tuple[str, ...] = (),
     ) -> ResearchObservation:
-        observation = ResearchObservation(document_url=document.url, kind=kind, value=value, confidence=confidence, evidence=evidence)
+        observation = ResearchObservation(
+            document_url=document.url, kind=kind, value=value,
+            confidence=confidence, evidence=evidence,
+        )
         self.store.add_observation(observation)
         return observation
 
+    def verify_observation(self, document: ResearchDocument, observation: ResearchObservation) -> VerificationResult:
+        return self.verifier.verify(document, observation)
 
-# Imported lazily here to keep the public constructor dependency-light.
-from .store import InMemoryResearchStore
+    @staticmethod
+    def score_observation(observation: ResearchObservation, verification: VerificationResult) -> float:
+        """Conservative score combining observation confidence and provenance quality."""
+        evidence_factor = min(1.0, len(verification.evidence_urls) / 3.0)
+        score = observation.confidence * 0.55 + verification.confidence * 0.30 + evidence_factor * 0.15
+        return round(max(0.0, min(1.0, score)), 4)
+
+    @staticmethod
+    def route(document: ResearchDocument, score: float, *, threshold: float = 0.65) -> ResearchRoute:
+        if not 0.0 <= threshold <= 1.0:
+            raise ValueError("threshold must be between 0 and 1")
+        destination = "publish_candidate" if score >= threshold else "research_queue"
+        reason = "evidence-backed score meets routing threshold" if destination == "publish_candidate" else "insufficient verified value for publication"
+        return ResearchRoute(document.url, destination, round(score, 4), reason)
