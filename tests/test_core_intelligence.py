@@ -1,5 +1,5 @@
 from devintel.core import (
-    ActionRequest, ActionRisk, AuditLog, EventBus, InvalidStateTransition, Orchestrator,
+    ActionRequest, ActionRisk, AuditLog, AuditRecord, EventBus, InvalidStateTransition, Orchestrator,
     PermissionDenied, RuntimeEvent, RuntimeState, StateStore,
 )
 from devintel.core.planner import PlanStep, Planner
@@ -101,8 +101,6 @@ def test_runtime_rejects_duplicate_handlers_and_invalid_metrics():
 
 def test_audit_log_is_bounded():
     audit = AuditLog(history_limit=1)
-    audit.record(runtime.audit.AuditRecord(event="one")) if False else None
-    from devintel.core import AuditRecord
     audit.record(AuditRecord(event="one"))
     audit.record(AuditRecord(event="two"))
     assert [record.event for record in audit.history()] == ["two"]
