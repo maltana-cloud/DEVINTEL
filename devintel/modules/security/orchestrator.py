@@ -81,7 +81,10 @@ class SecurityOrchestrator:
 
     def _contain(self, scope: str, reason: str) -> SecurityAction:
         record = self.containment.contain(scope, reason)
-        self._sync_runtime(RuntimeState.CONTAINMENT)
+        # Scoped incidents must remain isolated. Only an explicit core-scoped
+        # incident is allowed to change the global runtime state.
+        if scope == "core":
+            self._sync_runtime(RuntimeState.CONTAINMENT)
         self.events.publish(RuntimeEvent("security.contained", {
             "scope": scope,
             "revoked_capabilities": record.revoked_capabilities,
@@ -95,7 +98,8 @@ class SecurityOrchestrator:
 
     def begin_recovery(self, scope: str) -> RecoveryRecord:
         record = self.containment.begin_recovery(scope)
-        self._sync_runtime(RuntimeState.RECOVERY)
+        if scope == "core":
+            self._sync_runtime(RuntimeState.RECOVERY)
         self.events.publish(RuntimeEvent("security.recovery_started", {"scope": scope}))
         self.audit.record(AuditRecord("security.recovery_started", "recover", True, {"scope": scope}))
         return record
@@ -105,14 +109,16 @@ class SecurityOrchestrator:
         record = self.containment.restore(scope, checks_tuple)
         if not record.verified:
             raise RuntimeError("restoration requires verified recovery")
-        self._sync_runtime(RuntimeState.RESTORED)
+        if scope == "core":
+            self._sync_runtime(RuntimeState.RESTORED)
         self.events.publish(RuntimeEvent("security.restored", {"scope": scope, "checks": checks_tuple}))
         self.audit.record(AuditRecord("security.restored", "restore", True, {"scope": scope, "checks": checks_tuple}))
         return record
 
     def safe_degraded(self, scope: str, reason: str) -> RecoveryRecord:
         record = self.containment.safe_degraded(scope, reason)
-        self._sync_runtime(RuntimeState.SAFE_DEGRADED)
+        if scope == "core":
+            self._sync_runtime(RuntimeState.SAFE_DEGRADED)
         self.events.publish(RuntimeEvent("security.safe_degraded", {"scope": scope, "reason": reason}))
         self.audit.record(AuditRecord("security.safe_degraded", "degrade", True, {"scope": scope}))
         return record
