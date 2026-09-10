@@ -1,14 +1,27 @@
-"""Free-first research store with URL/content deduplication."""
+"""Research storage contracts and in-memory reference backend."""
 
 from __future__ import annotations
 
 from threading import RLock
+from typing import Protocol
 
 from .contracts import ResearchDocument, ResearchObservation, canonicalize_url
 
 
+class ResearchStore(Protocol):
+    """Minimum persistence contract required by the research pipeline."""
+
+    def add_document(self, document: ResearchDocument) -> bool: ...
+    def get(self, url: str) -> ResearchDocument | None: ...
+    def add_observation(self, observation: ResearchObservation) -> None: ...
+    def documents(self) -> tuple[ResearchDocument, ...]: ...
+    def observations(self) -> tuple[ResearchObservation, ...]: ...
+    def count_documents(self) -> int: ...
+    def count_observations(self) -> int: ...
+
+
 class InMemoryResearchStore:
-    """Thread-safe reference store; a persistent backend can implement the same API later."""
+    """Thread-safe reference store with URL/content deduplication."""
 
     def __init__(self) -> None:
         self._documents: dict[str, ResearchDocument] = {}
