@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+from typing import Any, Callable
 from uuid import uuid4
 
+from .audit import AuditLog, AuditRecord
 from .contracts import ActionRequest, ActionResult, ActionRisk, Event
 from .decision import DecisionEngine
 from .events import RuntimeEvent
@@ -15,33 +17,55 @@ from .runtime import RuntimeContext
 class Orchestrator:
     """Coordinates PLAN -> PERMISSION -> ACT -> VERIFY -> RECORD."""
 
-    def __init__(self, permission_policy: PermissionPolicy | None = None, runtime: RuntimeContext | None = None) -> None:
+    def __init__(
+        self,
+        permission_policy: PermissionPolicy | None = None,
+        runtime: RuntimeContext | None = None,
+        audit: AuditLog | None = None,
+    ) -> None:
         self.runtime = runtime or RuntimeContext()
         if permission_policy is not None:
             self.runtime.permissions = permission_policy
         self.permissions = self.runtime.permissions
         self.planner = Planner()
         self.decisions = DecisionEngine()
+        self.audit = audit or AuditLog()
 
     def authorize(self, request: ActionRequest, *, owner_approved: bool = False) -> bool:
         return self.permissions.check(request, owner_approved=owner_approved)
 
-    def register(self, action: str, handler) -> None:
+    def register(self, action: str, handler: Callable[[dict[str, Any]], Any]) -> None:
         self.runtime.register(action, handler)
 
     def record_event(self, event: Event) -> Event:
-        self.runtime.events.publish(RuntimeEvent(name=event.name, payload=dict(event.payload), created_at=event.created_at))
+        self.runtime.events.publish(
+            RuntimeEvent(name=event.name, payload=dict(event.payload), created_at=event.created_at)
+        )
         return event
 
-    def result(self, request: ActionRequest, *, success: bool, message: str = "", data=None) -> ActionResult:
+    def result(
+        self,
+        request: ActionRequest,
+        *,
+        success: bool,
+        message: str = "",
+        data: dict[str, Any] | None = None,
+    ) -> ActionResult:
         return ActionResult(success=success, action=request.action, message=message, data={} if data is None else data)
+
+    def _audit(self, event: str, request: ActionRequest, success: bool | None = None, **details: Any) -> None:
+        self.audit.record(AuditRecord(event=event, action=request.action, success=success, details=details))
 
     def execute(self, request: ActionRequest, *, owner_approved: bool = False, value: float = 0.0) -> ActionResult:
         """Execute one registered action through the core safety path."""
+        if not isinstance(request, ActionRequest):
+            raise TypeError("request must be an ActionRequest")
         self.runtime.increment("requests.total")
         self.record_event(Event("action.requested", {"action": request.action}))
+        self._audit("action.requested", request)
         try:
             decision = self.decisions.decide(request, value=value, owner_approved=owner_approved)
+            self._audit("action.decided", request, decision.allowed, score=decision.score, reason=decision.reason)
             if not decision.allowed:
                 self.runtime.increment("requests.rejected")
                 return self.result(request, success=False, message=decision.reason)
@@ -49,23 +73,29 @@ class Orchestrator:
             handler = self.runtime.handler(request.action)
             if handler is None:
                 self.runtime.increment("requests.unknown_action")
+                self._audit("action.unknown", request, False)
                 return self.result(request, success=False, message="No registered handler for action")
             self.record_event(Event("action.authorized", {"action": request.action}))
+            self._audit("action.authorized", request, True)
             output = handler(dict(request.payload))
             if output is None:
                 self.runtime.increment("requests.verification_failed")
                 self.record_event(Event("action.verification_failed", {"action": request.action}))
+                self._audit("action.verification_failed", request, False)
                 return self.result(request, success=False, message="Action produced no verifiable result")
             self.runtime.increment("requests.succeeded")
             self.record_event(Event("action.completed", {"action": request.action}))
+            self._audit("action.completed", request, True)
             return self.result(request, success=True, message="Action completed", data={"output": output})
         except PermissionDenied as exc:
             self.runtime.increment("requests.denied")
             self.record_event(Event("action.denied", {"action": request.action, "reason": str(exc)}))
+            self._audit("action.denied", request, False, reason=str(exc))
             return self.result(request, success=False, message=str(exc))
         except Exception as exc:
             self.runtime.increment("requests.failed")
             self.record_event(Event("action.failed", {"action": request.action, "error": type(exc).__name__}))
+            self._audit("action.failed", request, False, error=type(exc).__name__)
             return self.result(request, success=False, message=f"Action failed safely: {exc}")
 
     def run_plan(self, plan: Plan, *, owner_approved: bool = False) -> tuple[ActionResult, ...]:
