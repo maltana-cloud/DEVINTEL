@@ -1,5 +1,5 @@
 from devintel.core import (
-    ActionRequest, ActionRisk, EventBus, InvalidStateTransition, Orchestrator,
+    ActionRequest, ActionRisk, AuditLog, EventBus, InvalidStateTransition, Orchestrator,
     PermissionDenied, RuntimeEvent, RuntimeState, StateStore,
 )
 from devintel.core.planner import PlanStep, Planner
@@ -43,6 +43,9 @@ def test_orchestrator_executes_registered_action_and_records_events():
     assert result.data["output"] == "ok"
     names = [event.name for event in runtime.runtime.events.history()]
     assert names == ["action.requested", "action.authorized", "action.completed"]
+    assert [entry.event for entry in runtime.audit.history()] == [
+        "action.requested", "action.decided", "action.authorized", "action.completed"
+    ]
 
 
 def test_orchestrator_unknown_action_fails_closed():
@@ -77,3 +80,29 @@ def test_plan_stops_after_first_failure():
     results = runtime.plan_and_run("test", [PlanStep("1", "bad"), PlanStep("2", "good")])
     assert len(results) == 1
     assert results[0].success is False
+
+
+def test_runtime_rejects_duplicate_handlers_and_invalid_metrics():
+    runtime = Orchestrator()
+    runtime.register("echo", lambda payload: "ok")
+    try:
+        runtime.register("echo", lambda payload: "again")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("duplicate handler registration was accepted")
+    try:
+        runtime.runtime.increment(" ")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("blank metric name was accepted")
+
+
+def test_audit_log_is_bounded():
+    audit = AuditLog(history_limit=1)
+    audit.record(runtime.audit.AuditRecord(event="one")) if False else None
+    from devintel.core import AuditRecord
+    audit.record(AuditRecord(event="one"))
+    audit.record(AuditRecord(event="two"))
+    assert [record.event for record in audit.history()] == ["two"]
