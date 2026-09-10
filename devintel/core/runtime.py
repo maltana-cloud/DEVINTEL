@@ -26,7 +26,7 @@ class RuntimeContext:
     _lock: RLock = field(default_factory=RLock, init=False, repr=False)
 
     def register(self, action: str, handler: Handler) -> None:
-        if not action.strip() or not callable(handler):
+        if not isinstance(action, str) or not action.strip() or not callable(handler):
             raise ValueError("action and callable handler are required")
         with self._lock:
             if action in self._handlers:
@@ -38,5 +38,11 @@ class RuntimeContext:
             return self._handlers.get(action)
 
     def increment(self, metric: str) -> None:
+        if not isinstance(metric, str) or not metric.strip():
+            raise ValueError("metric name is required")
         with self._lock:
             self.metrics[metric] += 1
+
+    def snapshot_metrics(self) -> dict[str, int]:
+        with self._lock:
+            return dict(self.metrics)
