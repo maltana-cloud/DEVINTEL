@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from typing import Any
 from uuid import uuid4
 
 from .contracts import ActionRequest, ActionResult, ActionRisk, Event
 from .decision import DecisionEngine
+from .events import RuntimeEvent
 from .permissions import PermissionDenied, PermissionPolicy
 from .planner.engine import Plan, PlanStep, Planner
 from .runtime import RuntimeContext
@@ -15,11 +15,7 @@ from .runtime import RuntimeContext
 class Orchestrator:
     """Coordinates PLAN -> PERMISSION -> ACT -> VERIFY -> RECORD."""
 
-    def __init__(
-        self,
-        permission_policy: PermissionPolicy | None = None,
-        runtime: RuntimeContext | None = None,
-    ) -> None:
+    def __init__(self, permission_policy: PermissionPolicy | None = None, runtime: RuntimeContext | None = None) -> None:
         self.runtime = runtime or RuntimeContext()
         if permission_policy is not None:
             self.runtime.permissions = permission_policy
@@ -34,18 +30,14 @@ class Orchestrator:
         self.runtime.register(action, handler)
 
     def record_event(self, event: Event) -> Event:
-        self.runtime.events.publish(
-            __import__("devintel.core.events", fromlist=["RuntimeEvent"]).RuntimeEvent(
-                name=event.name, payload=event.payload, created_at=event.created_at
-            )
-        )
+        self.runtime.events.publish(RuntimeEvent(name=event.name, payload=dict(event.payload), created_at=event.created_at))
         return event
 
     def result(self, request: ActionRequest, *, success: bool, message: str = "", data=None) -> ActionResult:
         return ActionResult(success=success, action=request.action, message=message, data={} if data is None else data)
 
     def execute(self, request: ActionRequest, *, owner_approved: bool = False, value: float = 0.0) -> ActionResult:
-        """Execute one registered action through the full core safety path."""
+        """Execute one registered action through the core safety path."""
         self.runtime.increment("requests.total")
         self.record_event(Event("action.requested", {"action": request.action}))
         try:
@@ -60,8 +52,7 @@ class Orchestrator:
                 return self.result(request, success=False, message="No registered handler for action")
             self.record_event(Event("action.authorized", {"action": request.action}))
             output = handler(dict(request.payload))
-            verified = output is not None
-            if not verified:
+            if output is None:
                 self.runtime.increment("requests.verification_failed")
                 self.record_event(Event("action.verification_failed", {"action": request.action}))
                 return self.result(request, success=False, message="Action produced no verifiable result")
@@ -80,9 +71,11 @@ class Orchestrator:
     def run_plan(self, plan: Plan, *, owner_approved: bool = False) -> tuple[ActionResult, ...]:
         results: list[ActionResult] = []
         for step in plan.steps:
-            risk_value = step.payload.pop("_risk", ActionRisk.LOW)
-            risk = risk_value if isinstance(risk_value, ActionRisk) else ActionRisk.LOW
-            request = ActionRequest(action=step.action, risk=risk, reason=step.reason, payload=step.payload)
+            payload = dict(step.payload)
+            risk = payload.pop("_risk", ActionRisk.LOW)
+            if not isinstance(risk, ActionRisk):
+                risk = ActionRisk.LOW
+            request = ActionRequest(action=step.action, risk=risk, reason=step.reason, payload=payload)
             result = self.execute(request, owner_approved=owner_approved)
             results.append(result)
             if not result.success:
