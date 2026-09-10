@@ -19,14 +19,21 @@ DEVINTEL remains free-first, modular, verification-first, and bounded. System #4
 - [x] Fresh CI verification for the research completion checkpoint
 - [x] System #3 — Truth & Security
 - [x] Truth assessment, conservative evidence handling, fail-closed policy, external-input trust boundary, scoped containment, capability revocation, recovery verification, safe-degraded mode, security-event orchestration, and isolation hardening
+- [x] System #4 conversation/memory package foundation
+- [x] Stable conversation/message and memory contracts
+- [x] Bounded short-term conversation context
+- [x] Scoped in-memory long-term memory with relevance retrieval
+- [x] Free-first SQLite persistent memory adapter
+- [x] Initial conversation response orchestration over scoped context and memory
+- [x] Initial System #4 hardening tests for scope isolation, bounded context, persistence, and validation
 
 ## Current Work
 
-System #4 — Conversation & Memory. Build natural conversation, context handling, long-term memory, community conversation state, owner communication hooks, and safe memory boundaries on top of the existing Core, Research, and Security contracts.
+System #4 — Conversation & Memory. Continue hardening the foundation with explicit retention/privacy boundaries, audit/event hooks, security integration, owner/community isolation, and complete CI verification.
 
 ## Test Status
 
-System #3 is merged into `main` and was previously verified green. System #4 changes must receive fresh CI verification before completion.
+System #3 is merged into `main` and was previously verified green. System #4 foundation tests have been added but fresh CI verification is still required before completion.
 
 ## Known Architecture Notes
 
@@ -34,6 +41,7 @@ System #3 is merged into `main` and was previously verified green. System #4 cha
 - Legacy/duplicate top-level `core/` remains untouched until a later compatibility review.
 - Research code lives under `devintel/modules/research/`.
 - Security code lives under `devintel/modules/security/`.
+- Conversation code lives under `devintel/modules/conversation/`.
 - External content can never grant DEVINTEL authority or execution permissions.
 - Intelligence is separate from authority.
 - Conversation and memory must preserve per-user, per-community, and per-channel isolation.
@@ -49,27 +57,33 @@ Every AI must leave a truthful checkpoint before a usage limit, handoff, or cont
 
 ## Changed Files In This Completion Pass
 
+- `devintel/modules/conversation/__init__.py`
+- `devintel/modules/conversation/contracts.py`
+- `devintel/modules/conversation/memory.py`
+- `devintel/modules/conversation/engine.py`
+- `devintel/modules/conversation/sqlite_store.py`
+- `tests/test_conversation_memory.py`
 - `DEVINTEL_STATUS.md`
 
 ## Remaining Work
 
-1. Define stable conversation/message/context contracts.
-2. Build bounded short-term conversation context.
-3. Build persistent long-term memory with explicit scope and safe retention boundaries.
-4. Add memory retrieval and relevance handling without granting authority.
-5. Add community/channel conversation state isolation.
-6. Add owner communication hooks that preserve owner authority.
-7. Add security and regression tests.
-8. Run full CI and update this checkpoint before declaring System #4 complete.
+1. Add explicit retention/privacy policy boundaries.
+2. Add event/audit hooks without coupling conversation to authority.
+3. Add security-state integration and fail-safe behavior.
+4. Harden owner, private, community, group, and channel scope isolation.
+5. Expand regression/concurrency tests.
+6. Run full CI and update this checkpoint before declaring System #4 complete.
 
 ## Important Architectural Decisions
 
 - Conversation is an interface/capability layer, not the authority layer.
 - Memory is evidence/context, not permission.
-- Memory writes and reads must be bounded and auditable where appropriate.
+- Memory writes and reads are scope-bound and bounded.
 - Per-user, per-community, and per-channel context must not leak across scopes.
+- SQLite is an optional replaceable standard-library persistence backend, not a paid dependency.
+- Response generation is provider-independent through a responder interface.
 - No paid service or unrestricted external credential access is introduced by System #4.
-- Providers and storage implementations should remain replaceable.
+- Stored prompt-like text remains data; it must never be promoted to system authority.
 
 ## Security Considerations
 
@@ -79,14 +93,15 @@ Every AI must leave a truthful checkpoint before a usage limit, handoff, or cont
 - Preserve owner-control and security boundaries.
 - No unrestricted self-modification.
 - Memory failures must degrade safely rather than corrupt unrelated subsystems.
+- Scoped memory retrieval must never silently fall back to global memory.
 
 ## Latest Commit
 
-`22d9f826d0c2a303a856097b3502891503e9e7a2` — System #3 merged into `main`.
+`2e999780dadb26253e2b7497a42cf8da0b2b2923` — System #4 conversation/memory foundation and hardening tests.
 
 ## Next Action
 
-Implement System #4 contracts and bounded conversation/memory foundation, then test against the existing Core and Security boundaries.
+Continue System #4 hardening, then run the full repository CI suite. Do not move to System #5 until System #4 is genuinely complete and verified.
 
 ## AI Handoff Template
 
