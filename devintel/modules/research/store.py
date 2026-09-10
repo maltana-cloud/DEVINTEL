@@ -1,4 +1,4 @@
-"""Minimal research store with URL/content deduplication."""
+"""Free-first research store with URL/content deduplication."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from .contracts import ResearchDocument, ResearchObservation, canonicalize_url
 
 
 class InMemoryResearchStore:
-    """Free-first bounded-memory store; persistence can be added behind this interface."""
+    """Thread-safe reference store; a persistent backend can implement the same API later."""
 
     def __init__(self) -> None:
         self._documents: dict[str, ResearchDocument] = {}
@@ -40,3 +40,11 @@ class InMemoryResearchStore:
     def observations(self) -> tuple[ResearchObservation, ...]:
         with self._lock:
             return tuple(self._observations)
+
+    def count_documents(self) -> int:
+        with self._lock:
+            return len(self._documents)
+
+    def count_observations(self) -> int:
+        with self._lock:
+            return len(self._observations)
