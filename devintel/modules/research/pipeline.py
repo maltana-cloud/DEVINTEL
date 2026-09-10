@@ -11,6 +11,7 @@ from typing import Protocol
 
 from .contracts import ResearchCandidate, ResearchDocument, ResearchObservation
 from .limits import ResearchLimits
+from .normalization import normalize_content, normalize_title
 from .store import InMemoryResearchStore
 
 
@@ -55,9 +56,18 @@ class ResearchPipeline:
                 if not isinstance(document, ResearchDocument):
                     invalid += 1
                     continue
-                if len(document.content) > self.limits.max_document_chars:
+                title = normalize_title(document.title)
+                content = normalize_content(document.content)
+                if len(content) > self.limits.max_document_chars:
                     invalid += 1
                     continue
+                document = ResearchDocument(
+                    document.url, title, content,
+                    publisher=document.publisher,
+                    published_at=document.published_at,
+                    retrieved_at=document.retrieved_at,
+                    metadata=dict(document.metadata),
+                )
             except Exception:
                 failures += 1
                 if failures >= self.limits.max_provider_failures:
