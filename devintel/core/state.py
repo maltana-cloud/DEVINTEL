@@ -17,7 +17,10 @@ class RuntimeState(StrEnum):
 
 
 _ALLOWED: dict[RuntimeState, frozenset[RuntimeState]] = {
-    RuntimeState.NORMAL: frozenset({RuntimeState.WATCH, RuntimeState.RESTRICTED, RuntimeState.SAFE_DEGRADED}),
+    # A newly detected incident may require immediate containment. Security
+    # escalation is deliberately one-way at this boundary: recovery is the
+    # only path back from containment.
+    RuntimeState.NORMAL: frozenset({RuntimeState.WATCH, RuntimeState.RESTRICTED, RuntimeState.CONTAINMENT, RuntimeState.SAFE_DEGRADED}),
     RuntimeState.WATCH: frozenset({RuntimeState.NORMAL, RuntimeState.RESTRICTED, RuntimeState.CONTAINMENT, RuntimeState.SAFE_DEGRADED}),
     RuntimeState.RESTRICTED: frozenset({RuntimeState.NORMAL, RuntimeState.CONTAINMENT, RuntimeState.RECOVERY, RuntimeState.SAFE_DEGRADED}),
     RuntimeState.CONTAINMENT: frozenset({RuntimeState.RECOVERY, RuntimeState.SAFE_DEGRADED}),
