@@ -12,7 +12,7 @@ from typing import Protocol
 from .contracts import ResearchCandidate, ResearchDocument, ResearchObservation
 from .limits import ResearchLimits
 from .normalization import normalize_content, normalize_title
-from .store import InMemoryResearchStore
+from .store import ResearchStore
 
 
 class SourceProvider(Protocol):
@@ -33,7 +33,7 @@ class ResearchBatch:
 class ResearchPipeline:
     """Runs bounded DISCOVER -> INGEST -> NORMALIZE -> DEDUPLICATE -> STORE."""
 
-    def __init__(self, store: InMemoryResearchStore | None = None, limits: ResearchLimits | None = None) -> None:
+    def __init__(self, store: ResearchStore | None = None, limits: ResearchLimits | None = None) -> None:
         self.store = store or InMemoryResearchStore()
         self.limits = limits or ResearchLimits()
 
@@ -92,3 +92,7 @@ class ResearchPipeline:
         observation = ResearchObservation(document_url=document.url, kind=kind, value=value, confidence=confidence, evidence=evidence)
         self.store.add_observation(observation)
         return observation
+
+
+# Imported lazily here to keep the public constructor dependency-light.
+from .store import InMemoryResearchStore
