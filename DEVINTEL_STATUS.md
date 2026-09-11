@@ -1,7 +1,7 @@
 # DEVINTEL STATUS
 
 ## Current Milestone
-**Education & Mentorship Intelligence foundation — domain/channel scoped, adaptive, and revenue-aware**
+**Education & Mentorship integration — composition-root wired, bounded, provider-ready**
 
 ## Completed
 - [x] Systems #1–#9 completed and merged
@@ -12,15 +12,10 @@
 - [x] Provider adapter contracts hardened in PR #13
 - [x] Research, Conversation, Opportunity, Truth, Community, Growth, Business, Strategy, Tool Builder, and Monitoring specialists merged
 - [x] Bounded autonomous operating loop merged in PR #27
-- [x] Education & Mentorship contracts added
-- [x] Education learner/course/lesson state store added with scope isolation and bounded assessment history
-- [x] Education quality/commercial policy added; premium pricing does not override educational quality
-- [x] Adaptive learning-path engine added
-- [x] Education Specialist added behind the plugin boundary
-- [x] Education Specialist exported through the specialist layer
-- [x] Education regression tests added for evidence quality, scope isolation, progress-aware planning, and premium/free course handling
-- [x] Education specialist regression tests added for plugin execution and scope validation
-- [x] No education component grants publishing, payment, deployment, community-join, security, spending, withdrawal, or owner authority
+- [x] Education & Mentorship foundation merged in PR #28
+- [x] Education Specialist regression coverage added
+- [x] Education Engine and Education Specialist are now wired into the main DEVINTEL composition root
+- [x] Education remains behind the plugin boundary and does not gain authority from runtime registration
 
 ## Education & Mentorship Capability
 DEVINTEL education is domain-agnostic and channel-scoped. Each destination can maintain its own curriculum, mentor behavior, learner progress, skill map, practice, assessments, and commercial offers while sharing the core intelligence/security architecture.
@@ -48,10 +43,12 @@ Revenue model is locked as legitimate value creation, not pay-to-influence intel
 - High-risk financial or other sensitive domains must retain existing truth/security/permission controls and must not turn education into personalized high-risk advice.
 - Premium status and price cannot raise content quality/confidence.
 - Providers remain replaceable; no paid education provider is a hard dependency.
+- Runtime registration of Education Specialist does not bypass Core, Security, Permission, Distribution, Payment, Deployment, or Owner Control boundaries.
 
 ## Test Status
-- Education tests were added, but no CI workflow was exposed for the latest education commits through the current Actions read endpoint.
-- Therefore no post-change full-suite pass is claimed yet.
+- Education foundation and specialist tests exist.
+- Runtime composition now wires Education Engine + Education Specialist.
+- A post-integration full-suite CI pass must still be confirmed before this milestone is called fully verified.
 
 ## Important Architectural Decisions
 - Intelligence is not authority.
@@ -65,10 +62,10 @@ Revenue model is locked as legitimate value creation, not pay-to-influence intel
 - Free-first remains mandatory.
 
 ## Latest Commit
-`eedd299186ca91da721d09b9bde3b5e9400d8712` — added Education Specialist regression tests on the education-complete-v1 branch.
+`ad961fc2c0287df589b34f52a05a56edbdbd3cfd` — wired Education Engine and Education Specialist into the runtime composition root.
 
 ## Next Action
-Merge this education foundation, then connect Education Specialist with the provider registry and the existing Conversation/Memory, Research/Truth, Opportunity, Tool Builder, Growth, Business, Strategy, Distribution, and Monitoring boundaries through explicit adapters. Build natural channel-specific teaching/mentorship behavior before live payment adapters. Keep all external providers replaceable, free-first, permission-controlled, verified, and isolated.
+Verify the integrated runtime and full test suite, then build explicit provider adapters connecting Education with Research/Truth, Conversation/Memory, Opportunity, Tool Builder, Growth, Business, Strategy, Distribution, and Monitoring. After those boundaries are verified, build natural channel-specific teaching/mentorship behavior and only then add live payment adapters. Keep every external provider replaceable, free-first, permission-controlled, verified, and isolated.
 
 ## Handoff Protocol
 **PULL → READ → INSPECT → TEST → MODIFY → TEST → COMMIT → UPDATE STATUS → PUSH**
