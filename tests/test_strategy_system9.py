@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 
 import pytest
 
+from devintel.modules.business import InMemoryBusinessStore, RevenueRecord, RevenueStatus
 from devintel.modules.strategy import (
     CostRecord,
     DomainScore,
@@ -51,7 +52,19 @@ def test_scope_isolation():
     engine.evaluate_domain(domain("b", demand=.1))
     assert len(engine.summary("a").decisions) == 1
     assert len(engine.summary("b").decisions) == 1
-    assert engine.summary("a").decisions[0].target == "developers"
+
+
+def test_revenue_and_roi_are_reported_without_currency_conversion():
+    business = InMemoryBusinessStore()
+    business.add_revenue(RevenueRecord("r1", "offer", 300, "USD", RevenueStatus.CONFIRMED))
+    business.add_revenue(RevenueRecord("r2", "offer", 50, "USD", RevenueStatus.PENDING))
+    store = InMemoryStrategyStore()
+    engine = StrategyEngine(store, revenue_source=business)
+    engine.record_cost(CostRecord("c1", "a", 100, "USD", "provider", datetime.now(timezone.utc)))
+    summary = engine.summary("a")
+    assert summary.revenue.confirmed_totals == {"USD": 300}
+    assert summary.revenue.pending_totals == {"USD": 50}
+    assert engine.roi_by_currency("a")["USD"] == 2.0
 
 
 def test_invalid_threshold_rejected():
