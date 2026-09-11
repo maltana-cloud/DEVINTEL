@@ -1,90 +1,63 @@
 # DEVINTEL STATUS
 
-> Persistent cross-AI checkpoint. Every AI contributor MUST update this before stopping.
-
 ## Current Milestone
-
-**System #5 — Distribution & Community — completed, merged, and main CI verified**
+**System #6 — Tool Builder — implementation complete; branch CI/merge gate pending**
 
 ## Completed
-
-- [x] System #1 — Core Intelligence foundation
-- [x] Cross-AI collaboration rules
-- [x] System #2 — Knowledge & Research
-- [x] System #3 — Truth & Security
-- [x] System #4 — Conversation & Memory
-- [x] System #4 verified on `main` after merge
-- [x] System #5 — Distribution & Community
-- [x] Destination/channel/group/community/discussion/private contracts
-- [x] Natural value-first publishing decisions
-- [x] Fail-closed publication policy
-- [x] Per-destination rate limiting and isolation
-- [x] Provider-independent Telegram adapter boundary
-- [x] Explicit owner-approved community participation boundary
-- [x] Core permission, event, and audit integration
-- [x] System #5 regression tests
-- [x] System #5 PR #3 merged into `main`
-- [x] Post-merge `main` CI verified green (run #120)
+- [x] Systems #1–#5 completed and verified on `main`
+- [x] Problem/need request and existing-solution discovery boundaries
+- [x] Tool specification, artifact, build, sandbox, deployment, rollback, and lifecycle contracts
+- [x] Versioned thread-safe tool registry
+- [x] Replaceable builder/discovery/deployment providers
+- [x] Static fail-closed sandbox validation; generated code is never executed with host authority
+- [x] Fail-closed permission boundary for tool creation
+- [x] Health/lifecycle records and event/audit hooks
+- [x] System #6 regression tests
 
 ## Architecture
-
-Distribution is a capability/delivery layer, not an authority layer. Destinations are explicit and isolated. Telegram is an injected adapter. Natural publishing may choose silence, deferment, or publication based on value and confidence. Community participation is opt-in and owner-approved. Rate limits are scoped per destination.
-
-Owner direct posting remains independent of DEVINTEL: DEVINTEL never blocks, rewrites, delays, or approves an owner's direct platform action.
+System #6 is a bounded capability-builder layer. It discovers or reuses solutions before building, represents tools with stable contracts, builds through replaceable providers, validates generated source in a controlled sandbox, and exposes deployment/rollback and health boundaries. Tool creation is not unrestricted self-modification and does not grant authority over credentials, money, the host, or production systems.
 
 ## Security Considerations
-
-- Intelligence is not authority.
-- Platform/community content is untrusted data.
-- Missing adapters, invalid results, policy failures, and transport failures fail closed.
-- One destination failure cannot take down unrelated destinations.
-- No fake engagement, vote manipulation, spam, or permission bypass.
-- Community discovery never implies permission to join.
-- Telegram credentials are not stored in source code.
-- High-risk actions remain subject to Core permissions.
-- Security mechanisms remain quiet while owner-visible audit/event hooks remain available.
+- Generated/external source is untrusted data.
+- Default sandbox performs static validation and does not execute generated code.
+- Imports, attribute access, dynamic calls, and common dynamic execution primitives are rejected.
+- Tool risk is explicit; default service authorizes only low-risk tools.
+- Deployment is provider-injected and fails closed without a provider.
+- No credentials/secrets in tool artifacts.
+- No unrestricted self-modification.
+- Free-first/provider-independent boundaries preserved.
 
 ## Test Status
+System #6 tests are committed on `system-6-tool-builder`; GitHub Actions branch CI is the verification gate before merge.
 
-Branch CI for System #5 passed (run #119). PR #3 merged with merge commit `4ad2e079dfd67cf64c00a182fc9fb33ba6005408`. Post-merge `main` CI passed (run #120).
-
-## Changed Files In System #5
-
-- `devintel/modules/distribution/__init__.py`
-- `devintel/modules/distribution/contracts.py`
-- `devintel/modules/distribution/policy.py`
-- `devintel/modules/distribution/router.py`
-- `devintel/modules/distribution/rate_limit.py`
-- `devintel/modules/distribution/natural.py`
-- `devintel/modules/distribution/community.py`
-- `devintel/modules/distribution/telegram.py`
-- `devintel/modules/distribution/service.py`
-- `tests/test_distribution.py`
-- `tests/test_distribution_system5.py`
+## Changed Files In System #6
+- `devintel/modules/tool_builder/__init__.py`
+- `devintel/modules/tool_builder/contracts.py`
+- `devintel/modules/tool_builder/registry.py`
+- `devintel/modules/tool_builder/sandbox.py`
+- `devintel/modules/tool_builder/builder.py`
+- `devintel/modules/tool_builder/deployment.py`
+- `devintel/modules/tool_builder/service.py`
+- `devintel/modules/tool_builder/lifecycle.py`
+- `tests/test_tool_builder_system6.py`
 - `DEVINTEL_STATUS.md`
 
 ## Important Architectural Decisions
-
-- Distribution is provider-independent; Telegram is an adapter.
-- Natural publishing is value-first; silence is a valid outcome.
-- Destination isolation is mandatory.
-- Community participation requires explicit owner approval.
-- Rate limits are per destination.
-- Monetization remains System #8; System #5 does not introduce it.
-- No paid dependency is required.
+- Reuse existing solutions before generating new tools.
+- Tool generation is bounded and permission-controlled.
+- Generated code never receives unrestricted host authority.
+- Deployment is an adapter, not built-in production privilege.
+- Lifecycle updates remain observable and reversible.
+- Monetization remains System #8.
 
 ## Latest Commit
-
-`4ad2e079dfd67cf64c00a182fc9fb33ba6005408` — merged System #5. Status checkpoint follows this merge.
+System #6 implementation checkpoint; branch CI/merge gate pending.
 
 ## Next Action
-
-Begin **System #6 — Tool Builder** only from the latest `main` state. Preserve the collaboration rules, charter, security boundaries, and all completed-system contracts.
+Run branch CI, inspect/fix only System #6 failures, create PR, merge, verify fresh `main` CI, and update this checkpoint truthfully.
 
 ## Handoff Protocol
-
 **PULL → READ → INSPECT → TEST → MODIFY → TEST → COMMIT → UPDATE STATUS → PUSH**
 
 ## Non-Negotiable Rule
-
 **Every AI that works on DEVINTEL must leave a truthful, test-backed checkpoint before stopping.**
