@@ -43,11 +43,13 @@ class Lesson:
     evidence_urls: tuple[str, ...] = ()
     level: SkillLevel = SkillLevel.BEGINNER
     metadata: dict[str, Any] = field(default_factory=dict)
+    curriculum_version: str = "1"
     def __post_init__(self) -> None:
         if not self.lesson_id.strip() or not self.title.strip() or not self.domain.strip() or not self.content.strip():
             raise ValueError("lesson_id, title, domain, and content are required")
         if not self.skill_ids: raise ValueError("at least one skill is required")
         if any(not u.strip() for u in self.evidence_urls): raise ValueError("evidence URLs must be non-empty")
+        if not self.curriculum_version.strip(): raise ValueError("curriculum_version is required")
 
 @dataclass(frozen=True)
 class Course:
@@ -105,11 +107,15 @@ class Assessment:
     score: float
     feedback: str
     assessed_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    domain: str = ""
+    skill_id: str = ""
     def __post_init__(self) -> None:
         if not self.assessment_id.strip() or not self.scope_id.strip() or not self.learner_id.strip() or not self.task_id.strip() or not self.feedback.strip():
             raise ValueError("assessment identifiers and feedback are required")
         if not 0.0 <= self.score <= 1.0: raise ValueError("score must be between 0 and 1")
         if self.assessed_at.tzinfo is None: raise ValueError("assessed_at must be timezone-aware")
+        if self.domain and not self.domain.strip(): raise ValueError("domain must be non-empty when supplied")
+        if self.skill_id and not self.skill_id.strip(): raise ValueError("skill_id must be non-empty when supplied")
 
 @dataclass(frozen=True)
 class MentorshipSession:
@@ -135,7 +141,9 @@ class LearningPath:
     skill_ids: tuple[str, ...]
     lesson_ids: tuple[str, ...]
     rationale: str
+    curriculum_version: str = "1"
     def __post_init__(self) -> None:
         if not all(isinstance(v, str) and v.strip() for v in (self.path_id, self.scope_id, self.learner_id, self.domain, self.rationale)):
             raise ValueError("learning path fields are required")
         if not self.skill_ids or not self.lesson_ids: raise ValueError("learning path cannot be empty")
+        if not self.curriculum_version.strip(): raise ValueError("curriculum_version is required")
