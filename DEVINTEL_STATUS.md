@@ -1,55 +1,55 @@
 # DEVINTEL STATUS
 
 ## Current Milestone
-**System #9 — Reinvestment & Strategy — completed and merged**
+**System #10 — Monitoring & Owner Control + Plugin/Engine Extension Foundation — completed and merged**
 
 ## Completed
-- [x] Systems #1–#8 completed and verified
-- [x] System #9 Reinvestment & Strategy foundation completed
-- [x] Cost and budget tracking
-- [x] Revenue summary integration through a provider-independent source boundary
-- [x] Currency-preserving ROI analytics (no unsafe implicit FX conversion)
-- [x] Cost-category bottleneck detection
-- [x] Domain evaluation and strategic scoring
-- [x] Reinvestment, expansion, hold, research, and retirement recommendations
-- [x] Owner approval required for reinvestment/expansion commitments
-- [x] Scope-isolated strategy storage
-- [x] Bounded, thread-safe strategy state
-- [x] System #9 regression tests
-- [x] PR #7 merged into `main`
-- [x] Branch CI passed (run #163)
+- [x] Systems #1–#9 completed and merged
+- [x] System #10 monitoring contracts, bounded store, health engine, reports, and tests
+- [x] Scope-isolated health, queue, and alert state
+- [x] Owner-visible operational reporting without authority escalation
+- [x] Plugin/specialist-engine extension foundation
+- [x] Stable plugin lifecycle/action/result contracts
+- [x] Bounded versioned plugin registry
+- [x] Fail-closed plugin authorization
+- [x] Controlled plugin runtime and per-plugin failure isolation
+- [x] Plugin lifecycle service and architecture documentation
+- [x] Plugin regression tests
+- [x] Plugin PR #9 merged into `main`
+- [x] Plugin branch CI run #175 passed
 
 ## Architecture
-System #9 is the recommendation layer for resource allocation and long-term strategy. It analyzes costs, budgets, confirmed/pending/refunded revenue, ROI by currency, bottlenecks, domain demand, cost efficiency, confidence, and strategic fit. It can recommend reinvestment, expansion, holding, research, or retirement, but it cannot execute financial commitments by itself.
+Monitoring observes system health, channels, queues, errors, alerts, security visibility, and finance/revenue counters and produces owner reports. Monitoring does not grant permissions or execute financial, publishing, deployment, or security actions.
 
-Revenue is analyzed without assuming exchange rates between currencies. Cross-currency comparison/conversion must use an explicit future FX/provider adapter rather than silently mixing currencies.
+The plugin layer is a provider-independent extension boundary: `CORE -> PluginService -> PluginRuntime -> approved plugin handler`. Registration is not authority. Scope, permissions, security, truth, distribution, business, and owner-control boundaries remain authoritative.
+
+Future specialist engines such as video generation, crypto intelligence, memecoin analysis, football intelligence, image generation, and audio/voice can be added as separate plugins without modifying the core intelligence contracts. They are intentionally not implemented yet.
 
 ## Security Considerations
-- Strategy is intelligence, not authority.
-- No automatic unrestricted spending, withdrawals, or financial commitments.
-- Reinvestment and expansion require explicit owner approval.
-- Free-first operation remains mandatory: paid scaling is justified by measured value and available resources, not assumed in advance.
-- Revenue never overrides truth, relevance, safety, or security.
+- Monitoring is visibility, not authority.
+- Plugin registration does not grant authority or secrets.
+- High/critical plugin actions require owner approval.
+- Plugin failure is isolated from unrelated plugins/scopes.
+- No arbitrary source execution is provided by the plugin foundation.
 - Existing System #3 security and permission boundaries remain authoritative.
-- Scope isolation prevents one channel/domain from contaminating another.
-- Recommendations do not grant provider, payment, deployment, publishing, or account authority.
+- Scope isolation prevents cross-channel/domain/plugin contamination.
+- Free-first/provider-independent operation remains mandatory.
 
 ## Test Status
-System #9 branch CI run #163 passed for the final branch head before merge. PR #7 merged with merge commit `b2063a862ba3e7f775068678a8d1945a5854f166`. No separate post-merge `main` workflow run was exposed by the available GitHub Actions read endpoint for the merge commit; therefore this status does not falsely claim one.
+Plugin branch final head `ef4cef1cf6ee83211a8baab48132bf4bdda93d85` passed CI run #175 before merge. Plugin PR #9 merged into `main` with merge commit `60966fc9d8135435be0a6ca09391c4cdcab1a244`.
 
 ## Important Architectural Decisions
-- Strategy optimizes useful outcomes, not vanity metrics.
-- ROI is computed only within the same currency; no implicit currency conversion.
-- Revenue is an input to analysis, never an authority to spend.
-- Bottlenecks are evidence for recommendations, not automatic commands.
-- Domain expansion/retirement remains recommendation-only until authorized by the appropriate control layer.
-- Free-first and provider-independent boundaries remain mandatory.
+- Intelligence is not authority.
+- Monitoring reports facts and never escalates its own authority.
+- Plugins are specialist capabilities, not independent control planes.
+- Future engines remain modular and replaceable.
+- New providers/engines must preserve truth, security, permissions, scope isolation, and free-first constraints.
 
 ## Latest Commit
-`b2063a862ba3e7f775068678a8d1945a5854f166` — merged System #9. Status checkpoint follows the verified merge.
+`60966fc9d8135435be0a6ca09391c4cdcab1a244` — plugin framework merged into `main`. This status checkpoint records the completed milestone.
 
 ## Next Action
-Begin **System #10 — Monitoring & Owner Control** from the latest verified `main` state. Preserve all completed-system contracts, truth rules, security boundaries, owner control, and free-first constraints.
+Integrate System #10 and plugin health into broader runtime/control-center wiring, then add specialist engines one at a time when their prerequisites and safe provider adapters are ready.
 
 ## Handoff Protocol
 **PULL → READ → INSPECT → TEST → MODIFY → TEST → COMMIT → UPDATE STATUS → PUSH**
