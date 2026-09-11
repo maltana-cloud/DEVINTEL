@@ -13,6 +13,16 @@ from .state import StateStore
 
 Handler = Callable[[dict[str, Any]], Any]
 
+_STANDARD_METRICS = (
+    "requests.total",
+    "requests.succeeded",
+    "requests.rejected",
+    "requests.denied",
+    "requests.failed",
+    "requests.unknown_action",
+    "requests.verification_failed",
+)
+
 
 @dataclass
 class RuntimeContext:
@@ -45,4 +55,7 @@ class RuntimeContext:
 
     def snapshot_metrics(self) -> dict[str, int]:
         with self._lock:
-            return dict(self.metrics)
+            snapshot = dict(self.metrics)
+            for metric in _STANDARD_METRICS:
+                snapshot.setdefault(metric, 0)
+            return snapshot
