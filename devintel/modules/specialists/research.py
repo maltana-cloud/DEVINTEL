@@ -46,9 +46,11 @@ class ResearchSpecialist:
         self.attach()
 
     def execute(self, scope_id: str, query: str, provider: ResearchSource) -> ResearchSpecialistResult:
-        if not isinstance(scope_id, str) or not scope_id.strip():
+        scope = scope_id.strip() if isinstance(scope_id, str) else ""
+        search = query.strip() if isinstance(query, str) else ""
+        if not scope:
             raise ValueError("scope_id is required")
-        if not isinstance(query, str) or not query.strip():
+        if not search:
             raise ValueError("query is required")
         if not hasattr(provider, "discover") or not hasattr(provider, "ingest"):
             raise TypeError("provider must implement discover and ingest")
@@ -56,16 +58,28 @@ class ResearchSpecialist:
         action = PluginAction(
             plugin_id=self.plugin_id,
             action="research.scan",
-            scope_id=scope_id.strip(),
+            scope_id=scope,
             risk=PluginRisk.LOW,
             reason="bounded research discovery and ingestion",
+            payload={"query": search, "provider": provider},
         )
-        authorization = self.plugins.execute(action)
-        if not authorization.success:
-            raise RuntimeError(authorization.error)
-        batch = self.pipeline.run(provider, query.strip())
-        return ResearchSpecialistResult(scope_id.strip(), query.strip(), batch)
+        result = self.plugins.execute(action)
+        if not result.success:
+            raise RuntimeError(result.error)
+        return ResearchSpecialistResult(scope, search, result.output)
 
     def attach(self) -> None:
-        """Attach only a host-controlled capability marker; the research pipeline owns execution."""
-        self.plugins.attach(self.plugin_id, lambda _: {"capability": "research"})
+        """Attach the host-controlled research executor to the plugin boundary."""
+        def run(action: PluginAction) -> ResearchBatch:
+            payload = action.payload
+            if not isinstance(payload, dict):
+                raise TypeError("research action payload must be a mapping")
+            provider = payload.get("provider")
+            query = payload.get("query")
+            if not isinstance(query, str) or not query.strip():
+                raise ValueError("research query is required")
+            if not hasattr(provider, "discover") or not hasattr(provider, "ingest"):
+                raise TypeError("research provider is invalid")
+            return self.pipeline.run(provider, query.strip())
+
+        self.plugins.attach(self.plugin_id, run)
