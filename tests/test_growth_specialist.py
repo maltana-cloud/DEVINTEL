@@ -1,4 +1,4 @@
-from devintel.modules.growth.contracts import AudienceSignal, SignalKind
+from devintel.modules.growth.contracts import AudienceSignal, SignalKind, AwarenessAction
 from devintel.modules.specialists.growth import GrowthSpecialist
 
 class Source:
@@ -12,6 +12,8 @@ def test_growth_specialist_scopes_and_plans():
     result = GrowthSpecialist().execute("scope", "missing docs", Source())
     assert result.scope_id == "scope"
     assert len(result.plans) == 1
+    assert result.plans[0].action is AwarenessAction.NO_ACTION
+    assert "no destination" in result.plans[0].rationale
 
 def test_growth_specialist_rejects_invalid_input():
     try:
