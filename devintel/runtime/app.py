@@ -18,6 +18,7 @@ from ..modules.monitoring.engine import MonitoringEngine
 from ..modules.plugins.service import PluginService
 from ..modules.security.orchestrator import SecurityOrchestrator
 from ..modules.specialists.education import EducationSpecialist
+from ..providers.live import GenerationRequest, ProviderRouter, ResearchRequest
 from ..providers.registry import ProviderRegistry
 
 @dataclass(frozen=True)
@@ -40,6 +41,7 @@ class DEVINTELRuntime:
         self.monitoring = MonitoringEngine()
         self.plugins = PluginService()
         self.providers = ProviderRegistry()
+        self.live_providers = ProviderRouter()
         self.education = EducationEngine()
         self.education_specialist = EducationSpecialist(self.plugins, self.education)
         self.teaching = TeachingEngine()
@@ -96,6 +98,22 @@ class DEVINTELRuntime:
 
     def mentor_prompt(self, profile: TeachingProfile, goal: str, progress: Any = None) -> str:
         return self.teaching.mentor_prompt(profile, goal, progress)
+
+    def generate(self, request: GenerationRequest):
+        """Generate through the provider router; output is not truth-verified here."""
+        return self.live_providers.generate(request)
+
+    def research(self, request: ResearchRequest):
+        """Retrieve research through replaceable providers; verification stays separate."""
+        return self.live_providers.research(request)
+
+    def register_generation_provider(self, provider_id: str, provider: Any, *, priority: int = 100) -> None:
+        from ..providers.contracts import ProviderCapability
+        self.live_providers.register(provider_id, provider, ProviderCapability.GENERATION, priority=priority)
+
+    def register_research_provider(self, provider_id: str, provider: Any, *, priority: int = 100) -> None:
+        from ..providers.contracts import ProviderCapability
+        self.live_providers.register(provider_id, provider, ProviderCapability.RESEARCH, priority=priority)
 
     def snapshot(self, scope_id: str) -> RuntimeSnapshot:
         if not isinstance(scope_id, str) or not scope_id.strip(): raise ValueError("scope_id is required")
