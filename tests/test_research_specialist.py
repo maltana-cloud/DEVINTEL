@@ -12,6 +12,11 @@ class FakeSource:
         return ResearchDocument(url=candidate.url, title=candidate.title, content="useful research")
 
 
+class FailingSource(FakeSource):
+    def discover(self, query):
+        raise RuntimeError("provider unavailable")
+
+
 def test_research_specialist_is_scoped_and_bounded():
     specialist = ResearchSpecialist()
     result = specialist.execute("channel:tech", "python", FakeSource())
@@ -28,3 +33,14 @@ def test_research_specialist_rejects_missing_scope_or_query():
         specialist.execute("", "python", source)
     with pytest.raises(ValueError):
         specialist.execute("scope", "", source)
+
+
+def test_research_specialist_rejects_invalid_provider():
+    with pytest.raises(TypeError):
+        ResearchSpecialist().execute("scope", "python", object())
+
+
+def test_research_failure_isolated_at_plugin_boundary():
+    specialist = ResearchSpecialist()
+    with pytest.raises(RuntimeError, match="plugin isolated"):
+        specialist.execute("channel:tech", "python", FailingSource())
