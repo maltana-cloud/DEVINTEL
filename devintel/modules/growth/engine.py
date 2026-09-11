@@ -26,9 +26,17 @@ class GrowthEngine:
         self._emit("growth.opportunity", {"id": opp.opportunity_id, "scope_id": opp.scope_id, "action": action.value, "score": score.value})
         return opp
     def plan(self, opportunity: GrowthOpportunity, destinations: Sequence[str]) -> AwarenessPlan:
-        # Destinations are suggestions only; actual publishing remains System 5's policy/permission decision.
-        if opportunity.action is AwarenessAction.NO_ACTION: return AwarenessPlan(opportunity.opportunity_id, AwarenessAction.NO_ACTION)
+        # A specialist may discover a useful action without having distribution authority.
+        # Fail closed: without an explicit destination suggestion, do not create a publishable plan.
+        if opportunity.action is AwarenessAction.NO_ACTION:
+            return AwarenessPlan(opportunity.opportunity_id, AwarenessAction.NO_ACTION)
         safe = tuple(str(x).strip() for x in destinations if str(x).strip())
+        if not safe:
+            return AwarenessPlan(
+                opportunity.opportunity_id,
+                AwarenessAction.NO_ACTION,
+                rationale="Action identified, but no destination was supplied; distribution remains permission-controlled.",
+            )
         return AwarenessPlan(opportunity.opportunity_id, opportunity.action, safe, "Useful, evidence-backed awareness; distribution remains permission-controlled.")
     def run(self, scope_id: str, signals: Sequence[AudienceSignal], destination_selector: Callable[[AudienceSignal], Sequence[str]] | None = None) -> GrowthRun:
         accepted = 0; plans = []; opportunities = 0
