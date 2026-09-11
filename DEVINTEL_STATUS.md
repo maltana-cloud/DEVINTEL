@@ -1,7 +1,7 @@
 # DEVINTEL STATUS
 
 ## Current Milestone
-**Specialist engines + bounded autonomous loop integrated into main**
+**Education & Mentorship Intelligence foundation — domain/channel scoped, adaptive, and revenue-aware**
 
 ## Completed
 - [x] Systems #1–#9 completed and merged
@@ -10,99 +10,64 @@
 - [x] Runtime composition root merged in PR #11
 - [x] Owner Control Center hardened in PR #12
 - [x] Provider adapter contracts hardened in PR #13
-- [x] Research Specialist merged in PR #14
-- [x] Conversation Specialist v2 merged in PR #19
-- [x] Opportunity Specialist merged in PR #16
-- [x] Truth Specialist merged in PR #17
-- [x] Community Specialist merged in PR #18
-- [x] Growth Specialist merged in PR #20 and subsequently repaired on main
-- [x] Business Specialist merged in PR #23
-- [x] Strategy Specialist merged in PR #24
-- [x] Tool Builder Specialist merged in PR #25
-- [x] Monitoring Specialist merged in PR #26
+- [x] Research, Conversation, Opportunity, Truth, Community, Growth, Business, Strategy, Tool Builder, and Monitoring specialists merged
 - [x] Bounded autonomous operating loop merged in PR #27
-- [x] Specialist failures remain isolated by the plugin boundary
-- [x] Scope isolation is enforced in specialist execution and autonomous planning
-- [x] No unrestricted self-modification or authority escalation
+- [x] Education & Mentorship contracts added
+- [x] Education learner/course/lesson state store added with scope isolation and bounded assessment history
+- [x] Education quality/commercial policy added; premium pricing does not override educational quality
+- [x] Adaptive learning-path engine added
+- [x] Education Specialist added behind the plugin boundary
+- [x] Education Specialist exported through the specialist layer
+- [x] Education regression tests added for evidence quality, scope isolation, progress-aware planning, and premium/free course handling
+- [x] No education component grants publishing, payment, deployment, community-join, security, spending, withdrawal, or owner authority
 
-## Specialist Layer
-Current specialist set:
-- Research
-- Conversation
-- Opportunity
-- Truth
-- Community
-- Growth
-- Business
-- Strategy
-- Tool Builder
-- Monitoring
+## Education & Mentorship Capability
+DEVINTEL education is domain-agnostic and channel-scoped. Each destination can maintain its own curriculum, mentor behavior, learner progress, skill map, practice, assessments, and commercial offers while sharing the core intelligence/security architecture.
 
-All specialist engines execute through the plugin boundary. They do not grant themselves publishing, payment, deployment, community-join, security, spending, withdrawal, or owner authority.
+Learning loop:
+**LEVEL → GOAL → KNOWLEDGE GAP → LEARNING PATH → LESSON → PRACTICE → ASSESS → FEEDBACK → NEXT LESSON**
 
-## Autonomous Loop
-The runtime now exposes a bounded:
-**OBSERVE → UNDERSTAND → PLAN → PERMISSION → ACT → VERIFY → RECORD** cycle.
+Modes:
+- Structured courses
+- Personal mentorship
+- Practice/labs
+- Real-world apprenticeship
 
-The loop:
-- validates observation scope before planning
-- requires every planned action to carry an explicit matching scope marker
-- strips the internal scope marker before passing the action to Core
-- routes execution through the existing Core Orchestrator and permission policy
-- contains observer/planner/verifier failures to the current cycle
-- records a cycle result even when the recorder itself fails
-- never creates authority outside Core
-- runs one finite cycle at a time; no uncontrolled infinite self-loop
-
-## Recent Repairs
-Main Growth Specialist had a positional `PluginAction` payload bug that accidentally populated `requires_owner_approval`. It was repaired with keyword payload usage and manifest version `1.1.1`.
-
-The resulting historical PR #20 merge passed its branch workflow, but a later main workflow (#296) exposed the Growth Specialist's missing-destination behavior. Main was hardened so a useful growth action with no destination becomes a fail-closed `NO_ACTION` plan rather than an invalid publishable plan. The regression test was updated accordingly.
-
-The earlier Business and Strategy specialist branches became stale as main advanced; they were rebuilt cleanly from current main and merged as PRs #23 and #24. No stale branch was force-merged into main.
+Revenue model is locked as legitimate value creation, not pay-to-influence intelligence:
+- free education builds trust and usefulness
+- premium courses/mentorship can monetize deeper value
+- projects, assessments/certification, professional intelligence, software/services, relevant affiliates, sponsorships, and B2B education are future adapters
+- money never determines what DEVINTEL teaches or recommends
+- financial commitments and withdrawals remain permission-controlled
 
 ## Security Considerations
-- High/critical actions require explicit owner approval.
-- Security boundaries remain authoritative over convenience layers.
-- Plugin/provider failures are isolated to the affected scope.
-- Scope isolation prevents cross-channel/domain/plugin/provider contamination.
-- No arbitrary plugin source execution.
-- Secrets remain outside source and generated artifacts.
-- Financial, publishing, deployment, community, and security actions remain permission-controlled.
-- Monitoring is observation-only.
-- Owner control is a gate, not an alternate execution path.
-- Security mechanisms remain quiet to unauthorized observers.
-- Money must never override truth, relevance, or safety.
+- Education is a capability layer, not an authority layer.
+- Learner state is isolated by scope + learner + domain.
+- External education content remains untrusted until it satisfies the education/truth boundary.
+- High-risk financial or other sensitive domains must retain existing truth/security/permission controls and must not turn education into personalized high-risk advice.
+- Premium status and price cannot raise content quality/confidence.
+- Providers remain replaceable; no paid education provider is a hard dependency.
 
 ## Test Status
-- PR #14 Research Specialist workflow: **PASS**.
-- PR #17 Truth Specialist workflow: **PASS**.
-- PR #18 Community Specialist workflow: **PASS**.
-- PR #19 Conversation Specialist v2 workflow: **PASS**.
-- PR #20 Growth Specialist branch workflow: **PASS** after repair; later main workflow #296 found and exposed the no-destination regression, which was repaired on main.
-- PR #23 Business Specialist: merged after clean rebuild from current main; no post-merge main workflow is being claimed here.
-- PR #24 Strategy Specialist: merged after clean rebuild from current main; no post-merge main workflow is being claimed here.
-- PR #25 Tool Builder Specialist: merged after mergeability verification; no post-merge main workflow is being claimed here.
-- PR #26 Monitoring Specialist: merged after mergeability verification; no post-merge main workflow is being claimed here.
-- PR #27 Autonomous Loop: merged after mergeability verification; no post-merge main workflow is being claimed here.
-- Main workflow visibility is incomplete through the current Actions read endpoint, so this status intentionally does not claim a full post-merge main test pass.
+- Education tests were added, but no CI workflow was exposed for the latest education commits through the current Actions read endpoint.
+- Therefore no post-change full-suite pass is claimed yet.
 
 ## Important Architectural Decisions
 - Intelligence is not authority.
-- Owner control is a gate, not an alternate execution path.
-- Monitoring is visibility, not authority.
-- Plugins are specialist capabilities, not independent control planes.
-- Providers are replaceable integrations, not authorities.
-- Owner direct posting remains independent of DEVINTEL approval.
-- Specialist engines must use the plugin boundary and preserve scope/security contracts.
-- Autonomous operation must remain finite, bounded, permissioned, verifiable, and auditable.
-- Truth, security, permissions, scope isolation, and free-first constraints remain mandatory.
+- Education is domain-agnostic but channel-specific in behavior and curriculum.
+- Conversation and memory may personalize mentorship, but memory never grants permission.
+- Research and Truth provide evidence/provenance; education does not invent certainty.
+- Business can monetize educational products, but revenue never overrides truth, relevance, or safety.
+- Growth can discover learning demand, but distribution authority remains with System #5.
+- Tool Builder can support apprenticeship projects, but generated tools remain sandboxed and permission-controlled.
+- Autonomous education improvements remain finite, bounded, permissioned, verifiable, and auditable.
+- Free-first remains mandatory.
 
 ## Latest Commit
-`43cf335b9bee222050ce3d47a2cd1bd42bf1b3bb` — merged bounded autonomous operating loop PR #27.
+`34317ae51630c6f072ce6c92cd283f06ff6cb1e5` — education specialist exported into main after the initial Education & Mentorship foundation.
 
 ## Next Action
-Begin end-to-end orchestration wiring: connect the specialist engines to real provider adapters through the existing provider registry, then build the natural intelligence feed/publishing pipeline, community participation adapters, owner reporting, and legitimate payment adapters. Keep every external provider replaceable, free-first, permission-controlled, verified, and isolated. Use current official provider documentation before implementing live adapters.
+Integrate Education Specialist with the provider registry, then connect education to Conversation/Memory, Research/Truth, Opportunity, Tool Builder, Growth, Business, Strategy, Distribution, and Monitoring through explicit provider adapters. Build natural channel-specific teaching and mentorship behavior before live monetization/payment adapters. Keep all external providers replaceable, free-first, permission-controlled, verified, and isolated.
 
 ## Handoff Protocol
 **PULL → READ → INSPECT → TEST → MODIFY → TEST → COMMIT → UPDATE STATUS → PUSH**
