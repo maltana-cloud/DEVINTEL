@@ -1,14 +1,12 @@
 """Provider-independent education and mentorship orchestration."""
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import Protocol, Sequence
-from .contracts import Course, EducationMode, LearnerProgress, Lesson, LearningPath, SkillLevel
+from datetime import datetime, timezone
+from typing import Sequence
+from .contracts import Assessment, AssessmentResult, Course, EducationMode, LearnerProgress, LearningPath, Lesson, SkillLevel
+from .curriculum import CurriculumVersion, lesson_goal_score, prerequisite_skill_order
 from .policy import EducationPolicy
 from .store import EducationStore
-
-class EducationSource(Protocol):
-    def discover_skills(self, domain: str) -> Sequence[object]: ...
-    def create_lessons(self, domain: str, level: SkillLevel, goals: Sequence[str]) -> Sequence[object]: ...
 
 @dataclass(frozen=True)
 class EducationPlan:
@@ -20,20 +18,26 @@ class EducationPlan:
     path: LearningPath
 
 class EducationEngine:
-    """Builds bounded learning paths; content authority stays with verified inputs/providers."""
+    """Builds adaptive learning paths; content authority stays with verified inputs/providers."""
     def __init__(self, store: EducationStore | None = None, policy: EducationPolicy | None = None) -> None:
         self.store = store or EducationStore()
         self.policy = policy or EducationPolicy()
 
     def register_lesson(self, lesson: Lesson) -> Lesson:
-        if not self.policy.lesson_allowed(lesson):
-            raise ValueError("lesson does not satisfy education quality policy")
+        if not self.policy.lesson_allowed(lesson): raise ValueError("lesson does not satisfy education quality policy")
         return self.store.add_lesson(lesson)
 
     def register_course(self, course: Course) -> Course:
-        if not self.policy.course_allowed(course):
-            raise ValueError("course does not satisfy education policy")
+        if not self.policy.course_allowed(course): raise ValueError("course does not satisfy education policy")
         return self.store.add_course(course)
+
+    def register_curriculum(self, curriculum: CurriculumVersion) -> CurriculumVersion:
+        if curriculum.domain != curriculum.domain.strip(): raise ValueError("invalid curriculum domain")
+        for lesson_id in curriculum.lesson_ids:
+            lesson = next((x for x in self.store.lessons(curriculum.domain) if x.lesson_id == lesson_id), None)
+            if lesson is None: raise ValueError(f"unknown curriculum lesson: {lesson_id}")
+            if lesson.curriculum_version != curriculum.version: raise ValueError("lesson curriculum version mismatch")
+        return self.store.save_curriculum(curriculum)
 
     def build_path(self, scope_id: str, learner_id: str, domain: str, *, goals: Sequence[str] = (), level: SkillLevel = SkillLevel.BEGINNER, mode: EducationMode = EducationMode.COURSE) -> EducationPlan:
         scope = scope_id.strip() if isinstance(scope_id, str) else ""
@@ -42,14 +46,42 @@ class EducationEngine:
         if not scope or not learner or not subject: raise ValueError("scope_id, learner_id, and domain are required")
         progress = self.store.progress(scope, learner, subject)
         completed = set(progress.completed_lessons) if progress else set()
-        lessons = tuple(x for x in self.store.lessons(subject) if x.level == level and x.lesson_id not in completed)
+        mastered = set(progress.mastered_skills) if progress else set()
         skills = self.store.skills(subject)
-        skill_ids = tuple(x.skill_id for x in skills if not progress or x.skill_id not in progress.mastered_skills)
-        lesson_ids = tuple(x.lesson_id for x in lessons)
-        if not lesson_ids: raise ValueError("no suitable lessons available")
-        path = LearningPath(f"{scope}:{learner}:{subject}:{level.value}", scope, learner, subject, skill_ids, lesson_ids, "Selected uncompleted lessons and unmastered skills for the learner's current scope and level.")
+        prerequisite_skill_order(skills)
+        known_skills = {s.skill_id: s for s in skills}
+        lessons = [x for x in self.store.lessons(subject) if x.level == level and x.lesson_id not in completed]
+        selected: list[Lesson] = []
+        unlocked = set(mastered)
+        remaining = list(lessons)
+        while remaining:
+            eligible = [item for item in remaining if all(prereq in unlocked for sid in item.skill_ids for prereq in (known_skills[sid].prerequisites if sid in known_skills else ()))]
+            if not eligible: break
+            eligible.sort(key=lambda x: (-lesson_goal_score(x, goals), x.lesson_id))
+            item = eligible[0]
+            selected.append(item)
+            remaining.remove(item)
+            unlocked.update(item.skill_ids)
+        if not selected: raise ValueError("no suitable lessons available")
+        ordered = prerequisite_skill_order(skills)
+        skill_ids = tuple(sid for sid in ordered if sid in unlocked and sid not in mastered and any(sid in x.skill_ids for x in selected))
+        version = selected[0].curriculum_version
+        path = LearningPath(f"{scope}:{learner}:{subject}:{level.value}", scope, learner, subject, skill_ids or tuple(selected[0].skill_ids), tuple(x.lesson_id for x in selected), "Prioritized goal relevance while respecting skill prerequisites and learner progress.", version)
         self.store.save_path(path)
         return EducationPlan(scope, learner, subject, mode, level, path)
+
+    def record_assessment(self, assessment: Assessment) -> LearnerProgress:
+        if not assessment.domain or not assessment.skill_id: raise ValueError("assessment domain and skill_id are required")
+        self.store.add_assessment(assessment)
+        current = self.store.progress(assessment.scope_id, assessment.learner_id, assessment.domain)
+        completed = list(current.completed_lessons) if current else []
+        mastered = set(current.mastered_skills) if current else set()
+        if assessment.result is AssessmentResult.PASS: mastered.add(assessment.skill_id)
+        if assessment.result is AssessmentResult.PASS and assessment.task_id not in completed: completed.append(assessment.task_id)
+        goals = current.goals if current else ()
+        level = current.current_level if current else SkillLevel.BEGINNER
+        updated = LearnerProgress(assessment.scope_id, assessment.learner_id, assessment.domain, tuple(completed), tuple(sorted(mastered)), level, goals, datetime.now(timezone.utc))
+        return self.store.save_progress(updated)
 
     def progress(self, scope_id: str, learner_id: str, domain: str) -> LearnerProgress | None:
         return self.store.progress(scope_id, learner_id, domain)
