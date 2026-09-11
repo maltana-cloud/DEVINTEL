@@ -10,6 +10,7 @@ from ..core.audit import AuditLog
 from ..core.orchestrator import Orchestrator
 from ..core.runtime import RuntimeContext
 from ..modules.education.engine import EducationEngine
+from ..modules.education.integrations import EducationIntegrationResult, EducationSubsystemIntegration
 from ..modules.monitoring.engine import MonitoringEngine
 from ..modules.plugins.service import PluginService
 from ..modules.security.orchestrator import SecurityOrchestrator
@@ -48,6 +49,14 @@ class DEVINTELRuntime:
 
     def autonomous_engine(self, observer: Observer, planner: Planner, verifier: Verifier, recorder: Recorder | None = None) -> AutonomousEngine:
         return AutonomousEngine(self.orchestrator, observer, planner, verifier, recorder)
+
+    def education_integration(self, **adapters: object) -> EducationSubsystemIntegration:
+        """Create a read-only education integration boundary for host adapters."""
+        return EducationSubsystemIntegration(**adapters)
+
+    def education_signals(self, scope_id: str, domain: str, *, learner_id: str = "", **adapters: object) -> EducationIntegrationResult:
+        """Collect scoped cross-system learning signals; never creates authority."""
+        return self.education_integration(**adapters).collect(scope_id, domain, learner_id=learner_id)
 
     def snapshot(self, scope_id: str) -> RuntimeSnapshot:
         if not isinstance(scope_id, str) or not scope_id.strip():
