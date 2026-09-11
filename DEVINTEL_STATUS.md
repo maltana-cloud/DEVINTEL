@@ -4,54 +4,48 @@
 
 ## Current Milestone
 
-**System #3 — Truth & Security — completed and verified**
+**System #4 — Conversation & Memory — hardening complete pending CI**
 
 ## Project Rule
 
-DEVINTEL remains free-first, modular, verification-first, and bounded. System #3 was built as a complete major system before moving to System #4.
+DEVINTEL remains free-first, modular, verification-first, and bounded. System #4 is being completed as a coherent major system before moving to System #5.
 
 ## Completed
 
 - [x] System #1 — Core Intelligence foundation
 - [x] Cross-AI collaboration rules
 - [x] System #2 — Knowledge & Research
-- [x] Research contracts, limits, normalization, deduplication, storage, knowledge, opportunity, provider isolation, provenance verification, scoring/routing primitives, and hardening tests
-- [x] Fresh CI verification for the research completion checkpoint
-- [x] System #3 security package foundation
-- [x] Truth assessment contract and conservative evidence handling
-- [x] Fail-closed security policy and external-input trust boundary
-- [x] Scoped containment, capability revocation, recovery verification, and safe-degraded mode
-- [x] Security-event orchestration integrated with Core event/audit boundaries
-- [x] Global runtime containment escalation for explicit `core` incidents
-- [x] Scoped incident isolation so channel/provider incidents do not compromise unrelated runtime state
-- [x] Direct `NORMAL -> CONTAINMENT` emergency transition for global security incidents
-- [x] Recovery/restoration runtime synchronization for the explicit `core` scope
-- [x] System #3 isolation and orchestration hardening tests
-- [x] Full CI verification on the System #3 branch
+- [x] System #3 — Truth & Security
+- [x] System #4 stable conversation/message and memory contracts
+- [x] Bounded short-term conversation context
+- [x] Scope-isolated in-memory long-term memory with relevance retrieval
+- [x] Free-first SQLite persistent memory adapter
+- [x] Provider-independent conversation response orchestration
+- [x] Fail-closed memory policy for size, confidence, decision-memory, and authority metadata
+- [x] Auditable conversation success/failure and memory-write events
+- [x] Dedicated owner communication hook with isolated owner scope
+- [x] Regression tests for isolation, persistence, policy, audit/event behavior, and malformed input
 
 ## Current Work
 
-No unfinished System #3 implementation is known at this checkpoint. System #4 — Conversation & Memory — is the next milestone.
-
-## Last Verified Research Commit
-
-`7f42a4166fc59539ef5aa6ac779bf5e9fd1110c48`
+System #4 is awaiting fresh full CI verification. No Telegram/platform implementation is being introduced here; System #5 owns distribution/community platform integration.
 
 ## Test Status
 
-System #3 branch CI is green. Latest verified workflow run is tests run #80 on commit `3a437b6db7370803edfc3f7325188f566e66fb3e`, with a successful test job. The preceding push run #79 for the same commit was also successful.
+System #4 hardening tests are committed but have not yet received fresh GitHub Actions verification on this branch. Do not declare the milestone complete until CI is green.
 
 ## Known Architecture Notes
 
 - Canonical Python package: `devintel/`.
 - Legacy/duplicate top-level `core/` remains untouched until a later compatibility review.
 - Research code lives under `devintel/modules/research/`.
-- Providers supply untrusted data; ingestion never implies truth.
+- Security code lives under `devintel/modules/security/`.
+- Conversation code lives under `devintel/modules/conversation/`.
 - External content can never grant DEVINTEL authority or execution permissions.
-- Security lifecycle follows DETECT → CONTAIN → ISOLATE → UNDERSTAND → RECOVER → VERIFY → LEARN.
 - Intelligence is separate from authority.
-- Scoped containment is isolated by component; global runtime containment requires the explicit `core` scope.
-- Monetization remains a System #8 concern.
+- Conversation and memory preserve per-scope isolation.
+- Memory is context/evidence, never permission.
+- Stored prompt-like text remains data and cannot become system instructions.
 
 ## Handoff Protocol
 
@@ -61,52 +55,55 @@ Every AI must leave a truthful checkpoint before a usage limit, handoff, or cont
 
 ## Changed Files In This Completion Pass
 
-- `devintel/core/state.py`
-- `devintel/modules/security/__init__.py`
-- `devintel/modules/security/contracts.py`
-- `devintel/modules/security/truth.py`
-- `devintel/modules/security/policy.py`
-- `devintel/modules/security/containment.py`
-- `devintel/modules/security/orchestrator.py`
-- `tests/test_security_truth.py`
-- `tests/test_security_orchestrator.py`
+- `devintel/modules/conversation/__init__.py`
+- `devintel/modules/conversation/contracts.py`
+- `devintel/modules/conversation/memory.py`
+- `devintel/modules/conversation/engine.py`
+- `devintel/modules/conversation/sqlite_store.py`
+- `devintel/modules/conversation/policy.py`
+- `devintel/modules/conversation/service.py`
+- `devintel/modules/conversation/owner.py`
+- `tests/test_conversation_memory.py`
 - `DEVINTEL_STATUS.md`
 
 ## Remaining Work
 
-1. Merge the verified System #3 branch into `main`.
-2. Begin System #4 — Conversation & Memory only after the System #3 merge is confirmed.
-3. Preserve all System #3 security contracts and isolation boundaries in later systems.
+1. Run fresh full CI on the System #4 branch.
+2. Fix any CI failures without weakening isolation/security contracts.
+3. Open and verify a PR into `main`.
+4. Merge only after required CI is green.
+5. Verify post-merge main CI before declaring System #4 complete.
+6. Then begin System #5.
 
 ## Important Architectural Decisions
 
-- Truth assessment is conservative and never upgrades contradictory or weak evidence into certainty.
-- External text/data is always untrusted and cannot become authority through prompt-like instructions.
-- Security policy is fail-closed.
-- Containment is scoped so one affected component does not automatically stop unrelated components.
-- Only the explicit `core` security scope may synchronize global runtime containment/recovery state.
-- The global state machine permits direct `NORMAL -> CONTAINMENT` for emergency security escalation; returning from containment still requires recovery.
-- Capabilities are revoked during containment/safe-degraded states.
-- Restoration requires explicit verification checks.
-- No paid service or unrestricted credential access is introduced by System #3.
+- Conversation is an interface/capability layer, not the authority layer.
+- Memory is evidence/context, not permission.
+- Memory reads and writes are scope-bound and bounded.
+- SQLite is an optional replaceable standard-library persistence backend.
+- Response generation is provider-independent through a responder interface.
+- Owner communication has a dedicated owner scope but does not bypass the Core permission boundary.
+- Event and audit integration records outcomes without granting authority.
+- No paid service or unrestricted external credential access is introduced by System #4.
 
 ## Security Considerations
 
 - Preserve intelligence ≠ authority.
-- Treat all provider/web/community content as untrusted data.
-- Preserve fail-closed permissions and bounded execution.
-- Foundational security, owner-control, trust, and recovery boundaries must not be silently rewritten.
+- Treat user/community/provider content as untrusted input where applicable.
+- Prevent prompt-injection text stored in memory from becoming system authority.
+- Prevent cross-user/community/channel memory leakage.
 - No unrestricted self-modification.
-- Security should remain observable to its authorized owner but inconspicuous to everyone else.
-- A compromised channel/provider must not automatically compromise core, unrelated channels, owner control, or revenue systems.
+- Memory failures must degrade safely rather than corrupt unrelated subsystems.
+- Scoped retrieval must never silently fall back to global memory.
+- Decision-like memory requires explicit policy approval.
 
 ## Latest Commit
 
-`3a437b6db7370803edfc3f7325188f566e66fb3e` — security orchestration and scoped/global containment hardening. Status documentation is being recorded in the following checkpoint commit.
+`dc825b57d33bc95e15b7fec68a0c4cdd3986ee85` — System #4 hardening tests.
 
 ## Next Action
 
-Merge the verified System #3 pull request into `main`. After the merge is confirmed, move to System #4 — Conversation & Memory. Do not introduce unrelated project work.
+Run fresh CI, inspect failures if any, then PR/merge and verify main. Do not move to System #5 before those checks pass.
 
 ## AI Handoff Template
 
