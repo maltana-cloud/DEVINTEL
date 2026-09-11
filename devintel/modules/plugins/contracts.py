@@ -41,6 +41,7 @@ class PluginAction:
     risk: PluginRisk = PluginRisk.LOW
     reason: str = ""
     requires_owner_approval: bool = False
+    payload: object = None
 
 @dataclass(frozen=True)
 class PluginResult:
