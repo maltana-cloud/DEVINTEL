@@ -32,5 +32,5 @@ def test_runtime_keeps_high_risk_actions_approval_gated():
 def test_runtime_snapshot_exposes_plugin_state_without_granting_authority():
     runtime = DEVINTELRuntime()
     snapshot = runtime.snapshot("scope:test")
-    assert snapshot.plugin_status == (("specialist.education", "enabled", 1),)
+    assert snapshot.plugin_status == (("specialist.education", "ENABLED", 1),)
     assert snapshot.scope_id == "scope:test"
