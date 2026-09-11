@@ -3,6 +3,7 @@
 from .business import BusinessSpecialist, BusinessSpecialistResult
 from .community import CommunitySignal, CommunitySpecialist, CommunitySpecialistResult
 from .conversation_v2 import ConversationResult, ConversationSpecialist
+from .education import EducationSpecialist, EducationSpecialistResult
 from .growth import GrowthSpecialist, GrowthSpecialistResult
 from .monitoring import MonitoringSpecialist, MonitoringSpecialistResult
 from .opportunity import OpportunitySpecialist, OpportunitySpecialistResult
@@ -15,6 +16,7 @@ __all__ = [
     "BusinessSpecialist", "BusinessSpecialistResult",
     "CommunitySignal", "CommunitySpecialist", "CommunitySpecialistResult",
     "ConversationResult", "ConversationSpecialist",
+    "EducationSpecialist", "EducationSpecialistResult",
     "GrowthSpecialist", "GrowthSpecialistResult",
     "MonitoringSpecialist", "MonitoringSpecialistResult",
     "OpportunitySpecialist", "OpportunitySpecialistResult",
