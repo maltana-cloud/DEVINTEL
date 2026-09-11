@@ -1,12 +1,22 @@
 from devintel.control import ControlDecision, OwnerControlCenter
 from devintel.runtime import DEVINTELRuntime
 
+
 def test_control_snapshot_is_observation_only():
     center = OwnerControlCenter(DEVINTELRuntime())
     snap = center.snapshot("channel:test")
     assert snap.scope_id == "channel:test"
     assert snap.plugin_count == 0
     assert snap.pending_approvals == 0
+
+
+def test_pending_approvals_are_scoped():
+    center = OwnerControlCenter(DEVINTELRuntime())
+    center.request("scope:a", "publish")
+    center.request("scope:b", "publish")
+    assert center.snapshot("scope:a").pending_approvals == 1
+    assert center.snapshot("scope:b").pending_approvals == 1
+
 
 def test_sensitive_command_is_approval_gated_and_consumed_after_approval():
     center = OwnerControlCenter(DEVINTELRuntime())
@@ -15,6 +25,7 @@ def test_sensitive_command_is_approval_gated_and_consumed_after_approval():
     assert center.decide(command, owner_approved=True) is ControlDecision.ALLOW
     assert center.consume(command, owner_approved=True) is ControlDecision.ALLOW
     assert center.decide(command, owner_approved=True) is ControlDecision.DENY
+
 
 def test_unknown_command_fails_closed():
     center = OwnerControlCenter(DEVINTELRuntime())
