@@ -9,9 +9,11 @@ from ..control.service import OwnerControlCenter
 from ..core.audit import AuditLog
 from ..core.orchestrator import Orchestrator
 from ..core.runtime import RuntimeContext
+from ..modules.education.engine import EducationEngine
 from ..modules.monitoring.engine import MonitoringEngine
 from ..modules.plugins.service import PluginService
 from ..modules.security.orchestrator import SecurityOrchestrator
+from ..modules.specialists.education import EducationSpecialist
 from ..providers.registry import ProviderRegistry
 
 @dataclass(frozen=True)
@@ -34,6 +36,8 @@ class DEVINTELRuntime:
         self.monitoring = MonitoringEngine()
         self.plugins = PluginService()
         self.providers = ProviderRegistry()
+        self.education = EducationEngine()
+        self.education_specialist = EducationSpecialist(self.plugins, self.education)
         self.control = OwnerControlCenter(self)
 
     def register_action(self, action: str, handler: Any) -> None:
