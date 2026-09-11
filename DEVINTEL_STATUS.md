@@ -1,54 +1,64 @@
 # DEVINTEL STATUS
 
 ## Current Milestone
-**System #10 — Monitoring & Owner Control — completed and merged**
+**Runtime integration — completed and merged; mainline verification pending**
 
 ## Completed
 - [x] Systems #1–#9 completed and merged
-- [x] System #10 monitoring contracts, bounded store, health engine, reports, and tests
+- [x] System #10 Monitoring & Owner Control foundation merged
+- [x] Plugin / Specialist Engine Framework merged
+- [x] Monitoring contracts, bounded store, health engine, reports, and tests
 - [x] Scope-isolated health, queue, and alert state
 - [x] Owner-visible operational reporting without authority escalation
-- [x] Plugin health can be represented through the monitoring boundary
-- [x] PR #10 merged into `main`
-- [x] Plugin / Specialist Engine Framework completed in PR #9
+- [x] Runtime composition root added in PR #11
+- [x] Runtime wires Core, Security, Monitoring, and Plugins without collapsing their authority boundaries
+- [x] Runtime high-risk actions remain owner-approval gated
+- [x] Runtime snapshot exposes operational/plugin state without granting authority
+
+## Latest Integration
+PR #11 — `feat(runtime): integrate DEVINTEL subsystem composition root`
+- Head tested: `48a3494849e8ce653a8989dd0677ebd335235ae0`
+- CI run #205 passed the full test suite
+- PR #11 merged into `main` with merge commit `682aaf701f52075b5f07dff9abedbed0b9a60828`
+- The available Actions read endpoint has not yet exposed a post-merge workflow run for the merge commit, so this checkpoint does not claim post-merge CI passed.
 
 ## Architecture
-Monitoring observes system health, channels, queues, errors, alerts, security visibility, and finance/revenue counters and produces owner reports. Monitoring does not grant permissions or execute financial, publishing, deployment, or security actions.
+The runtime is a composition root, not a new authority layer. Core orchestration remains responsible for action planning, permission checks, execution, verification, and audit. Security remains responsible for threat response and containment. Monitoring remains observation/reporting only. Plugins remain replaceable specialist capabilities and cannot grant themselves publishing, payment, deployment, account, or security authority.
 
-The plugin layer remains the extension boundary for future specialist engines. It allows video generation, crypto intelligence, memecoin analysis, football intelligence, image generation, audio/voice, and other engines to be added without modifying the core intelligence contracts.
-
-Plugins are replaceable specialist capabilities, not authorities. Registration is not permission. Scope and capability metadata cannot grant publishing, payment, deployment, account, or security authority. Existing core permission and security boundaries remain authoritative.
+Owner control remains the final authority for sensitive actions. Conversation and memory do not grant authority. External input remains untrusted. Provider integrations remain replaceable and free-first compatible.
 
 ## Security Considerations
-- High/critical plugin actions require explicit owner approval.
-- Plugin execution failures isolate the affected plugin.
+- High/critical actions require explicit owner approval.
+- Security boundaries remain authoritative over runtime convenience layers.
+- Plugin failures are isolated to the affected plugin.
 - Scope isolation prevents cross-channel/domain/plugin contamination.
 - No arbitrary plugin source execution is provided by the foundation.
-- Secrets remain outside plugin source and artifacts.
-- Providers remain replaceable and free-first compatible.
-- Monitoring is visibility, not authority.
-- Security mechanisms remain quiet to unauthorized observers.
+- Secrets remain outside source and generated artifacts.
+- Monitoring does not grant permissions or execute financial, publishing, deployment, or security actions.
 - No unrestricted self-modification or authority escalation.
+- Security mechanisms remain quiet to unauthorized observers.
 
 ## Test Status
-System #10 PR #10 merged successfully with merge commit `8290eda8e2a0806c450b90e32da27c4de1f445fd`. The available Actions read endpoint did not expose a workflow run for that merge commit at checkpoint time, so this status does not falsely claim CI passed. The branch contains regression tests in `tests/test_monitoring_system10.py` and the repository test workflow is configured to run `python -m pytest -q`.
-
-Plugin branch final head `ef4cef1cf6ee83211a8baab48132bf4bdda93d85` passed CI run #175 before its merge in PR #9.
+- PR #11 full suite: **PASS** — workflow run #205.
+- Post-merge `main` workflow: **not yet observed** through the available Actions read endpoint.
+- The repository test workflow remains configured to run the full pytest suite.
+- System #10's earlier PR #10 merge is preserved as historical state; its merge-time CI visibility was incomplete, so no unsupported CI claim is made here.
 
 ## Important Architectural Decisions
 - Intelligence is not authority.
-- Monitoring reports operational facts and never escalates its own authority.
+- Monitoring is visibility, not authority.
 - Plugins are specialist capabilities, not independent control planes.
-- Future engines remain modular and replaceable.
-- New engines must implement the plugin boundary and pass tests before integration.
+- Runtime composition must not bypass existing permission/security boundaries.
+- Owner direct posting remains independent of DEVINTEL approval.
+- Future specialist engines must implement the plugin boundary and pass tests before integration.
 - Truth, security, permissions, scope isolation, and free-first constraints remain mandatory.
-- Actual specialist engines remain future work; the plugin framework is the extension mechanism.
+- Money must never override truth, relevance, or safety.
 
 ## Latest Commit
-`8290eda8e2a0806c450b90e32da27c4de1f445fd` — merged System #10 Monitoring & Owner Control foundation. This status checkpoint follows that verified merge.
+`682aaf701f52075b5f07dff9abedbed0b9a60828` — merged runtime integration PR #11.
 
 ## Next Action
-Wire monitoring into the broader DEVINTEL runtime/control center and expose safe owner-facing operational state. Then add specialist engines one at a time when their prerequisites and safe provider adapters are ready.
+Verify the merged `main` state and post-merge CI. Once mainline is green, continue strengthening the owner control center and provider-adapter boundaries before adding specialist engines. Specialist engines will be added one at a time with isolated scope, permissions, tests, and failure handling.
 
 ## Handoff Protocol
 **PULL → READ → INSPECT → TEST → MODIFY → TEST → COMMIT → UPDATE STATUS → PUSH**
