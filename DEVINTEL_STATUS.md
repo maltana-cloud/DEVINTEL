@@ -4,36 +4,35 @@
 
 ## Current Milestone
 
-**System #4 — Conversation & Memory — in progress**
+**System #4 — Conversation & Memory — hardening complete pending CI**
 
 ## Project Rule
 
-DEVINTEL remains free-first, modular, verification-first, and bounded. System #4 is being built as a complete major system before moving to System #5.
+DEVINTEL remains free-first, modular, verification-first, and bounded. System #4 is being completed as a coherent major system before moving to System #5.
 
 ## Completed
 
 - [x] System #1 — Core Intelligence foundation
 - [x] Cross-AI collaboration rules
 - [x] System #2 — Knowledge & Research
-- [x] Research contracts, limits, normalization, deduplication, storage, knowledge, opportunity, provider isolation, provenance verification, scoring/routing primitives, and hardening tests
-- [x] Fresh CI verification for the research completion checkpoint
 - [x] System #3 — Truth & Security
-- [x] Truth assessment, conservative evidence handling, fail-closed policy, external-input trust boundary, scoped containment, capability revocation, recovery verification, safe-degraded mode, security-event orchestration, and isolation hardening
-- [x] System #4 conversation/memory package foundation
-- [x] Stable conversation/message and memory contracts
+- [x] System #4 stable conversation/message and memory contracts
 - [x] Bounded short-term conversation context
-- [x] Scoped in-memory long-term memory with relevance retrieval
+- [x] Scope-isolated in-memory long-term memory with relevance retrieval
 - [x] Free-first SQLite persistent memory adapter
-- [x] Initial conversation response orchestration over scoped context and memory
-- [x] Initial System #4 hardening tests for scope isolation, bounded context, persistence, and validation
+- [x] Provider-independent conversation response orchestration
+- [x] Fail-closed memory policy for size, confidence, decision-memory, and authority metadata
+- [x] Auditable conversation success/failure and memory-write events
+- [x] Dedicated owner communication hook with isolated owner scope
+- [x] Regression tests for isolation, persistence, policy, audit/event behavior, and malformed input
 
 ## Current Work
 
-System #4 — Conversation & Memory. Continue hardening the foundation with explicit retention/privacy boundaries, audit/event hooks, security integration, owner/community isolation, and complete CI verification.
+System #4 is awaiting fresh full CI verification. No Telegram/platform implementation is being introduced here; System #5 owns distribution/community platform integration.
 
 ## Test Status
 
-System #3 is merged into `main` and was previously verified green. System #4 foundation tests have been added but fresh CI verification is still required before completion.
+System #4 hardening tests are committed but have not yet received fresh GitHub Actions verification on this branch. Do not declare the milestone complete until CI is green.
 
 ## Known Architecture Notes
 
@@ -44,10 +43,9 @@ System #3 is merged into `main` and was previously verified green. System #4 fou
 - Conversation code lives under `devintel/modules/conversation/`.
 - External content can never grant DEVINTEL authority or execution permissions.
 - Intelligence is separate from authority.
-- Conversation and memory must preserve per-user, per-community, and per-channel isolation.
-- Memory must not become an authority bypass.
-- Sensitive or unsafe memory must be bounded by explicit policy.
-- Monetization remains a System #8 concern.
+- Conversation and memory preserve per-scope isolation.
+- Memory is context/evidence, never permission.
+- Stored prompt-like text remains data and cannot become system instructions.
 
 ## Handoff Protocol
 
@@ -62,46 +60,50 @@ Every AI must leave a truthful checkpoint before a usage limit, handoff, or cont
 - `devintel/modules/conversation/memory.py`
 - `devintel/modules/conversation/engine.py`
 - `devintel/modules/conversation/sqlite_store.py`
+- `devintel/modules/conversation/policy.py`
+- `devintel/modules/conversation/service.py`
+- `devintel/modules/conversation/owner.py`
 - `tests/test_conversation_memory.py`
 - `DEVINTEL_STATUS.md`
 
 ## Remaining Work
 
-1. Add explicit retention/privacy policy boundaries.
-2. Add event/audit hooks without coupling conversation to authority.
-3. Add security-state integration and fail-safe behavior.
-4. Harden owner, private, community, group, and channel scope isolation.
-5. Expand regression/concurrency tests.
-6. Run full CI and update this checkpoint before declaring System #4 complete.
+1. Run fresh full CI on the System #4 branch.
+2. Fix any CI failures without weakening isolation/security contracts.
+3. Open and verify a PR into `main`.
+4. Merge only after required CI is green.
+5. Verify post-merge main CI before declaring System #4 complete.
+6. Then begin System #5.
 
 ## Important Architectural Decisions
 
 - Conversation is an interface/capability layer, not the authority layer.
 - Memory is evidence/context, not permission.
-- Memory writes and reads are scope-bound and bounded.
-- Per-user, per-community, and per-channel context must not leak across scopes.
-- SQLite is an optional replaceable standard-library persistence backend, not a paid dependency.
+- Memory reads and writes are scope-bound and bounded.
+- SQLite is an optional replaceable standard-library persistence backend.
 - Response generation is provider-independent through a responder interface.
+- Owner communication has a dedicated owner scope but does not bypass the Core permission boundary.
+- Event and audit integration records outcomes without granting authority.
 - No paid service or unrestricted external credential access is introduced by System #4.
-- Stored prompt-like text remains data; it must never be promoted to system authority.
 
 ## Security Considerations
 
 - Preserve intelligence ≠ authority.
 - Treat user/community/provider content as untrusted input where applicable.
-- Prevent prompt-injection text stored in memory from becoming system instructions.
-- Preserve owner-control and security boundaries.
+- Prevent prompt-injection text stored in memory from becoming system authority.
+- Prevent cross-user/community/channel memory leakage.
 - No unrestricted self-modification.
 - Memory failures must degrade safely rather than corrupt unrelated subsystems.
-- Scoped memory retrieval must never silently fall back to global memory.
+- Scoped retrieval must never silently fall back to global memory.
+- Decision-like memory requires explicit policy approval.
 
 ## Latest Commit
 
-`2e999780dadb26253e2b7497a42cf8da0b2b2923` — System #4 conversation/memory foundation and hardening tests.
+`dc825b57d33bc95e15b7fec68a0c4cdd3986ee85` — System #4 hardening tests.
 
 ## Next Action
 
-Continue System #4 hardening, then run the full repository CI suite. Do not move to System #5 until System #4 is genuinely complete and verified.
+Run fresh CI, inspect failures if any, then PR/merge and verify main. Do not move to System #5 before those checks pass.
 
 ## AI Handoff Template
 
