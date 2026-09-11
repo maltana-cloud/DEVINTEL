@@ -11,6 +11,7 @@ from ..core.orchestrator import Orchestrator
 from ..core.runtime import RuntimeContext
 from ..modules.education.engine import EducationEngine
 from ..modules.education.integrations import EducationIntegrationResult, EducationSubsystemIntegration
+from ..modules.education.teaching import TeachingEngine, TeachingProfile, TeachingResponse
 from ..modules.monitoring.engine import MonitoringEngine
 from ..modules.plugins.service import PluginService
 from ..modules.security.orchestrator import SecurityOrchestrator
@@ -39,6 +40,7 @@ class DEVINTELRuntime:
         self.providers = ProviderRegistry()
         self.education = EducationEngine()
         self.education_specialist = EducationSpecialist(self.plugins, self.education)
+        self.teaching = TeachingEngine()
         self.control = OwnerControlCenter(self)
 
     def register_action(self, action: str, handler: Any) -> None:
@@ -57,6 +59,21 @@ class DEVINTELRuntime:
     def education_signals(self, scope_id: str, domain: str, *, learner_id: str = "", **adapters: object) -> EducationIntegrationResult:
         """Collect scoped cross-system learning signals; never creates authority."""
         return self.education_integration(**adapters).collect(scope_id, domain, learner_id=learner_id)
+
+    def register_teaching_profile(self, profile: TeachingProfile) -> TeachingProfile:
+        """Register channel-specific teaching behavior without granting channel authority."""
+        return self.teaching.register_profile(profile)
+
+    def teaching_profile(self, channel_id: str) -> TeachingProfile | None:
+        return self.teaching.profile(channel_id)
+
+    def teach(self, scope_id: str, learner_id: str, profile: TeachingProfile, lesson: Any, *, mode: Any = None, progress: Any = None) -> TeachingResponse:
+        """Build a bounded teaching response; language generation remains provider-controlled."""
+        from ..modules.education.contracts import EducationMode
+        return self.teaching.teach(scope_id, learner_id, profile, lesson, mode=mode or EducationMode.COURSE, progress=progress)
+
+    def mentor_prompt(self, profile: TeachingProfile, goal: str, progress: Any = None) -> str:
+        return self.teaching.mentor_prompt(profile, goal, progress)
 
     def snapshot(self, scope_id: str) -> RuntimeSnapshot:
         if not isinstance(scope_id, str) or not scope_id.strip():
