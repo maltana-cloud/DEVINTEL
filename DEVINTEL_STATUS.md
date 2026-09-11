@@ -1,7 +1,7 @@
 # DEVINTEL STATUS
 
 ## Current Milestone
-**Education & Mentorship — natural channel-specific teaching and mentorship layer**
+**Education & Mentorship — natural teaching layer merged; preparing autonomous learning feedback**
 
 ## Completed
 - [x] Systems #1–#10 foundations merged
@@ -13,28 +13,26 @@
 - [x] Research + Truth education adapters merged
 - [x] Cross-subsystem Education signal adapters merged in PR #31
 - [x] Adaptive curriculum hardening merged in PR #32
-- [x] Channel-specific TeachingProfile contract added
-- [x] TeachingEngine added for bounded lesson delivery and mentorship prompt shaping
-- [x] Runtime exposes teaching profile registration and teaching/mentor boundaries
+- [x] Channel-specific TeachingProfile and TeachingEngine merged in PR #33
+- [x] Runtime exposes channel-specific teaching and mentorship boundaries
 - [x] Teaching tests cover channel specificity, domain isolation, scoped progress, and authority non-leakage
 
-## Channel-Specific Education
-Education is one capability with different identities per destination. A channel can define its own domain, teaching style, practice style, tone, and response shape without changing the shared intelligence core.
+## Education Architecture
+Education is one shared capability with different behavior per destination. Each channel can define its domain, teaching style, practice style, tone, and response shape while preserving common intelligence, truth, security, and permission boundaries.
 
-Examples include build-along programming, scenario-based finance education, match-based football analysis, project-based AI learning, case-study business education, exercise-driven accounting, experiment-oriented chemistry, and defensive lab-style cybersecurity education.
+The learning lifecycle is now:
+**DEMAND → PLAN → VERIFY → TEACH → PRACTICE → ASSESS → UPDATE PROGRESS → ADAPT**.
 
-Teaching does not grant authority. Publishing remains under Distribution, payment remains under Business, deployment remains under Tool Builder, security remains under Security, and owner actions remain under Owner Control.
+Goal-aware curriculum planning, prerequisite-aware sequencing, evidence/confidence gating, curriculum versions, scoped learner progress, bounded storage, and channel-specific teaching structure are implemented.
 
-## Mentorship Boundary
-The TeachingEngine produces bounded teaching structure and provider-ready mentor prompts. Actual natural-language generation remains provider-controlled, allowing free/open providers and future model adapters without coupling the Education core to a specific model.
-
-Learner progress remains scope-isolated and can influence teaching level/context, but memory and progress never grant permissions.
+## Authority Boundary
+Teaching and mentorship are capability-only. They do not grant publishing, payment, deployment, spending, moderation, security, or owner authority. Actual language generation remains provider-controlled. Distribution controls publication; Business controls payment; Tool Builder controls deployment; Security controls security; Owner Control controls sensitive owner actions.
 
 ## Verification
-This branch requires complete CI verification before merge. No green result is claimed until observed.
+PR #32 Education hardening CI run **#396 / ID 34648573309** passed. PR #33 teaching-layer CI run **#404 / ID 34648725196** passed. The changes were then merged. Post-merge workflow lookup for the merge commits is not exposed, so no post-merge CI pass is claimed.
 
 ## Next Action
-After this layer is green and merged, connect Education practice/assessment feedback into the autonomous operating loop and outcome measurement. Then build the real provider adapters for research/model generation/Telegram operation and only later the live payment adapters.
+Connect Education assessment/feedback to the bounded autonomous operating loop and outcome measurement. Then add provider adapters for model generation, research, Telegram operation, analytics, and other live services. Live payment adapters remain later and must remain provider-independent and approval-controlled.
 
 ## Non-Negotiable Rule
 **Every AI that works on DEVINTEL must leave a truthful, test-backed checkpoint before stopping.**
