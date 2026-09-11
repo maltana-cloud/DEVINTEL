@@ -1,7 +1,7 @@
 # DEVINTEL STATUS
 
 ## Current Milestone
-**Education & Mentorship — adaptive curriculum engine hardening**
+**Education & Mentorship — natural channel-specific teaching and mentorship layer**
 
 ## Completed
 - [x] Systems #1–#10 foundations merged
@@ -11,39 +11,30 @@
 - [x] Bounded autonomous operating loop merged
 - [x] Education foundation and Education Specialist merged
 - [x] Research + Truth education adapters merged
-- [x] Education cross-subsystem signal adapters merged in PR #31
-- [x] Unified EducationProvider is now the engine-facing provider contract
-- [x] Goal-aware lesson ranking added
-- [x] Prerequisite validation and deterministic lesson sequencing added
-- [x] Assessment results can update scoped learner progress
-- [x] Curriculum versions added to lessons and learning paths
-- [x] Skills, lessons, courses, progress, paths, curricula, and assessments are bounded by the education store limit
+- [x] Cross-subsystem Education signal adapters merged in PR #31
+- [x] Adaptive curriculum hardening merged in PR #32
+- [x] Channel-specific TeachingProfile contract added
+- [x] TeachingEngine added for bounded lesson delivery and mentorship prompt shaping
+- [x] Runtime exposes teaching profile registration and teaching/mentor boundaries
+- [x] Teaching tests cover channel specificity, domain isolation, scoped progress, and authority non-leakage
 
-## Education Safety Boundary
-Education remains a capability layer, not an authority layer. Content must retain evidence and confidence through EducationPolicy. Research supplies evidence and Truth remains the verification boundary. Education signals never grant publication, payment, deployment, spending, moderation, security, or owner authority.
+## Channel-Specific Education
+Education is one capability with different identities per destination. A channel can define its own domain, teaching style, practice style, tone, and response shape without changing the shared intelligence core.
 
-Learner progress is keyed by `(scope_id, learner_id, domain)`. Cross-scope state is never inferred. Provider failures remain isolated at their host-controlled integration boundary.
+Examples include build-along programming, scenario-based finance education, match-based football analysis, project-based AI learning, case-study business education, exercise-driven accounting, experiment-oriented chemistry, and defensive lab-style cybersecurity education.
 
-## Adaptive Learning Behavior
-The engine now plans in this order:
-**VERIFY INPUTS → LOAD LEARNER PROGRESS → VALIDATE PREREQUISITES → RANK BY GOAL RELEVANCE → SELECT ELIGIBLE LESSONS → UPDATE PROGRESS FROM ASSESSMENTS**.
+Teaching does not grant authority. Publishing remains under Distribution, payment remains under Business, deployment remains under Tool Builder, security remains under Security, and owner actions remain under Owner Control.
 
-Goal relevance uses explicit lesson `goal_tags` when supplied and conservative title/content matching otherwise. Prerequisite cycles and missing prerequisite references fail closed. Completed lessons and mastered skills are excluded from new paths.
+## Mentorship Boundary
+The TeachingEngine produces bounded teaching structure and provider-ready mentor prompts. Actual natural-language generation remains provider-controlled, allowing free/open providers and future model adapters without coupling the Education core to a specific model.
 
-## Test Coverage Added
-- goal-aware learning path selection
-- prerequisite validation
-- assessment-to-progress updates
-- scope isolation of learner progress
-- curriculum version registration
-- bounded education collections
-- existing evidence/quality and monetization regression coverage
+Learner progress remains scope-isolated and can influence teaching level/context, but memory and progress never grant permissions.
 
 ## Verification
-This branch is intended for CI verification before merge. No green result is claimed until GitHub Actions reports success.
+This branch requires complete CI verification before merge. No green result is claimed until observed.
 
 ## Next Action
-After this milestone is green and merged, build the natural channel-specific teaching/mentorship layer: domain teaching styles, mentorship sessions, practice/lab generation, adaptive feedback, curriculum progression, and outcome measurement. Live payment adapters remain later.
+After this layer is green and merged, connect Education practice/assessment feedback into the autonomous operating loop and outcome measurement. Then build the real provider adapters for research/model generation/Telegram operation and only later the live payment adapters.
 
 ## Non-Negotiable Rule
 **Every AI that works on DEVINTEL must leave a truthful, test-backed checkpoint before stopping.**
