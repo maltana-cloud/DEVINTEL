@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Sequence
-from .contracts import Assessment, AssessmentResult, Course, EducationMode, LearnerProgress, Lesson, LearningPath, SkillLevel
+from .contracts import Assessment, AssessmentResult, Course, EducationMode, LearnerProgress, LearningPath, Lesson, SkillLevel
 from .curriculum import CurriculumVersion, lesson_goal_score, prerequisite_skill_order
 from .policy import EducationPolicy
 from .store import EducationStore
@@ -48,28 +48,25 @@ class EducationEngine:
         completed = set(progress.completed_lessons) if progress else set()
         mastered = set(progress.mastered_skills) if progress else set()
         skills = self.store.skills(subject)
-        prerequisite_skill_order(skills)  # validates the graph before planning
+        prerequisite_skill_order(skills)
         known_skills = {s.skill_id: s for s in skills}
         lessons = [x for x in self.store.lessons(subject) if x.level == level and x.lesson_id not in completed]
         selected: list[Lesson] = []
         unlocked = set(mastered)
         remaining = list(lessons)
         while remaining:
-            eligible = [
-                item for item in remaining
-                if all(prereq in unlocked for sid in item.skill_ids for prereq in known_skills.get(sid, SkillLevel) .prerequisites)
-            ]
-            if not eligible:
-                break
+            eligible = [item for item in remaining if all(prereq in unlocked for sid in item.skill_ids for prereq in (known_skills[sid].prerequisites if sid in known_skills else ()))]
+            if not eligible: break
             eligible.sort(key=lambda x: (-lesson_goal_score(x, goals), x.lesson_id))
             item = eligible[0]
             selected.append(item)
             remaining.remove(item)
             unlocked.update(item.skill_ids)
         if not selected: raise ValueError("no suitable lessons available")
-        skill_ids = tuple(sid for sid in prerequisite_skill_order(skills) if sid in unlocked and sid not in mastered and any(sid in x.skill_ids for x in selected))
+        ordered = prerequisite_skill_order(skills)
+        skill_ids = tuple(sid for sid in ordered if sid in unlocked and sid not in mastered and any(sid in x.skill_ids for x in selected))
         version = selected[0].curriculum_version
-        path = LearningPath(f"{scope}:{learner}:{subject}:{level.value}", scope, learner, subject, skill_ids, tuple(x.lesson_id for x in selected), "Prioritized goal relevance while respecting skill prerequisites and learner progress.", version)
+        path = LearningPath(f"{scope}:{learner}:{subject}:{level.value}", scope, learner, subject, skill_ids or tuple(selected[0].skill_ids), tuple(x.lesson_id for x in selected), "Prioritized goal relevance while respecting skill prerequisites and learner progress.", version)
         self.store.save_path(path)
         return EducationPlan(scope, learner, subject, mode, level, path)
 
