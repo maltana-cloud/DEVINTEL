@@ -1,7 +1,7 @@
 # DEVINTEL STATUS
 
 ## Current Milestone
-**Education & Mentorship integration — cross-subsystem signal boundary**
+**Education & Mentorship integration — cross-subsystem signal boundary merged**
 
 ## Completed
 - [x] Systems #1–#9 completed and merged
@@ -18,7 +18,7 @@
 - [x] Research + Truth education adapters merged in PR #30
 - [x] Cross-subsystem Education signal adapters added for Conversation/Memory, Opportunity, Tool Builder, Growth, Business, Strategy, Distribution, and Monitoring
 - [x] Runtime exposes the read-only Education subsystem integration boundary
-- [x] Branch CI failure investigated and repaired: two stale runtime/owner-control expectations now match the registered Education Specialist and PluginState enum representation
+- [x] PR #31 merged to main as `831df8569e506bc409e3dbf064c2b44a60d8490b`
 
 ## Education Integration Boundary
 Education now has an explicit read-only signal layer for adjacent systems. The integration collects learner context, unmet learning needs, apprenticeship needs, learning-demand signals, commercial needs, strategic priorities, channel context, and health observations. These inputs are signals only; they do not create actions, permissions, publishing rights, payment authority, deployment authority, or security authority.
@@ -36,9 +36,10 @@ All adapter calls are host-controlled and failures are isolated per source. Scop
 - Free-first remains mandatory.
 
 ## Test Status
-- First branch CI attempt failed with **148 passed, 2 failed**; failures were stale expectations in existing runtime/owner-control tests, not the new adapter tests.
-- Both failures have been corrected on the branch.
-- A fresh CI run after the fixes is required before merge; no green result is being claimed yet.
+- Initial branch CI exposed 148 passed / 2 stale expectation failures.
+- The stale runtime/owner-control expectations were repaired.
+- Fresh branch CI run **#382 / ID 34629589900** passed successfully.
+- Post-merge workflow for main commit `831df8569e506bc409e3dbf064c2b44a60d8490b` is not exposed by the available workflow lookup, so no post-merge CI pass is claimed.
 
 ## Important Architectural Decisions
 - Education is domain-agnostic but channel-specific in behavior and curriculum.
@@ -50,10 +51,10 @@ All adapter calls are host-controlled and failures are isolated per source. Scop
 - Revenue never overrides truth, relevance, safety, or educational quality.
 
 ## Latest Commit
-`30bd7603e615e663962ca1340f548ddcd8f8d0e2` — corrected stale runtime and owner-control test expectations after CI inspection.
+`831df8569e506bc409e3dbf064c2b44a60d8490b` — merged Education cross-subsystem signal integration (PR #31).
 
 ## Next Action
-Verify a fresh full-suite CI run for this branch, merge only after it is green, then harden the Education engine itself: unify provider protocols, make goals influence path selection, add prerequisite-aware sequencing, connect assessment to progress/feedback, add curriculum versioning, and bound the education store. After that, build natural channel-specific teaching/mentorship behavior. Live payment adapters remain later.
+Harden the Education engine itself: unify provider protocols, make goals influence path selection, add prerequisite-aware sequencing, connect assessment to progress/feedback, add curriculum versioning, and bound the education store. Then build natural channel-specific teaching/mentorship behavior. Live payment adapters remain later.
 
 ## Handoff Protocol
 **PULL → READ → INSPECT → TEST → MODIFY → TEST → COMMIT → UPDATE STATUS → PUSH**
