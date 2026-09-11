@@ -1,64 +1,64 @@
 # DEVINTEL STATUS
 
 ## Current Milestone
-**Runtime integration — completed and merged; mainline verification pending**
+**Foundation hardening — provider adapter layer completed and merged; specialist engines next**
 
 ## Completed
 - [x] Systems #1–#9 completed and merged
 - [x] System #10 Monitoring & Owner Control foundation merged
 - [x] Plugin / Specialist Engine Framework merged
-- [x] Monitoring contracts, bounded store, health engine, reports, and tests
-- [x] Scope-isolated health, queue, and alert state
-- [x] Owner-visible operational reporting without authority escalation
-- [x] Runtime composition root added in PR #11
-- [x] Runtime wires Core, Security, Monitoring, and Plugins without collapsing their authority boundaries
-- [x] Runtime high-risk actions remain owner-approval gated
-- [x] Runtime snapshot exposes operational/plugin state without granting authority
+- [x] Runtime composition root merged in PR #11
+- [x] Owner Control Center hardened in PR #12
+- [x] Provider adapter contracts hardened in PR #13
+- [x] Monitoring remains observation-only
+- [x] Owner control remains fail-closed and approval-gated for sensitive commands
+- [x] Provider integrations remain replaceable and free-first
+- [x] No unrestricted self-modification or authority escalation
 
 ## Latest Integration
-PR #11 — `feat(runtime): integrate DEVINTEL subsystem composition root`
-- Head tested: `48a3494849e8ce653a8989dd0677ebd335235ae0`
-- CI run #205 passed the full test suite
-- PR #11 merged into `main` with merge commit `682aaf701f52075b5f07dff9abedbed0b9a60828`
-- The available Actions read endpoint has not yet exposed a post-merge workflow run for the merge commit, so this checkpoint does not claim post-merge CI passed.
+PR #13 — `fix(providers): harden provider contracts and tests`
+- Head tested: `0bd3957c0f749e7e6c2c7c81a1c38ae8d18281d8`
+- CI workflow run #226 passed successfully, including the full test step
+- PR #13 merged into `main` with merge commit `7917f7dcc4a4f920a1b51bdb5962dd25acf15aa`
+- No post-merge workflow run is exposed yet through the available Actions read endpoint, so this checkpoint does not claim post-merge CI passed.
+
+## Provider Boundary
+Provider contracts now validate provider identity and result consistency, and provider health metadata uses per-instance defaults. Provider results remain envelopes only; permission, truth verification, security, and execution authority remain outside the provider layer.
 
 ## Architecture
-The runtime is a composition root, not a new authority layer. Core orchestration remains responsible for action planning, permission checks, execution, verification, and audit. Security remains responsible for threat response and containment. Monitoring remains observation/reporting only. Plugins remain replaceable specialist capabilities and cannot grant themselves publishing, payment, deployment, account, or security authority.
-
-Owner control remains the final authority for sensitive actions. Conversation and memory do not grant authority. External input remains untrusted. Provider integrations remain replaceable and free-first compatible.
+DEVINTEL is composed of bounded systems connected through explicit contracts. Core orchestration remains responsible for planning, permission, execution, verification, and audit. Security remains authoritative for threat response and containment. Monitoring reports state but does not grant authority. Plugins provide specialist capabilities but cannot grant themselves publishing, payment, deployment, account, or security authority. Providers are replaceable adapters and never become authorities.
 
 ## Security Considerations
 - High/critical actions require explicit owner approval.
-- Security boundaries remain authoritative over runtime convenience layers.
-- Plugin failures are isolated to the affected plugin.
-- Scope isolation prevents cross-channel/domain/plugin contamination.
-- No arbitrary plugin source execution is provided by the foundation.
+- Security boundaries remain authoritative over convenience layers.
+- Plugin/provider failures must be isolated to the affected scope.
+- Scope isolation prevents cross-channel/domain/plugin/provider contamination.
+- No arbitrary plugin source execution.
 - Secrets remain outside source and generated artifacts.
-- Monitoring does not grant permissions or execute financial, publishing, deployment, or security actions.
-- No unrestricted self-modification or authority escalation.
+- Financial, publishing, deployment, community, and security actions remain permission-controlled.
 - Security mechanisms remain quiet to unauthorized observers.
+- Money must never override truth, relevance, or safety.
 
 ## Test Status
-- PR #11 full suite: **PASS** — workflow run #205.
-- Post-merge `main` workflow: **not yet observed** through the available Actions read endpoint.
-- The repository test workflow remains configured to run the full pytest suite.
-- System #10's earlier PR #10 merge is preserved as historical state; its merge-time CI visibility was incomplete, so no unsupported CI claim is made here.
+- PR #13 full test workflow: **PASS** — workflow run #226.
+- PR #13 merge: **SUCCESS** — merge commit `7917f7dcc4a4f920a1b51bdb5962dd25acf15aa`.
+- Post-merge `main` workflow: not yet observed through the available Actions read endpoint.
 
 ## Important Architectural Decisions
 - Intelligence is not authority.
+- Owner control is a gate, not an alternate execution path.
 - Monitoring is visibility, not authority.
 - Plugins are specialist capabilities, not independent control planes.
-- Runtime composition must not bypass existing permission/security boundaries.
+- Providers are replaceable integrations, not authorities.
 - Owner direct posting remains independent of DEVINTEL approval.
-- Future specialist engines must implement the plugin boundary and pass tests before integration.
+- Specialist engines must use the plugin boundary and pass tests before integration.
 - Truth, security, permissions, scope isolation, and free-first constraints remain mandatory.
-- Money must never override truth, relevance, or safety.
 
 ## Latest Commit
-`682aaf701f52075b5f07dff9abedbed0b9a60828` — merged runtime integration PR #11.
+`7917f7dcc4a4f920a1b51bdb5962dd25acf15aa` — merged provider hardening PR #13.
 
 ## Next Action
-Verify the merged `main` state and post-merge CI. Once mainline is green, continue strengthening the owner control center and provider-adapter boundaries before adding specialist engines. Specialist engines will be added one at a time with isolated scope, permissions, tests, and failure handling.
+Begin the first specialist engine through the plugin boundary. Build one engine completely, including contracts, provider adapters where needed, permissions, scope isolation, failure handling, tests, and owner-visible monitoring hooks. Do not begin the next specialist engine until the first is verified and merged.
 
 ## Handoff Protocol
 **PULL → READ → INSPECT → TEST → MODIFY → TEST → COMMIT → UPDATE STATUS → PUSH**
