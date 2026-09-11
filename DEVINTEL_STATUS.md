@@ -1,63 +1,63 @@
 # DEVINTEL STATUS
 
 ## Current Milestone
-**System #6 — Tool Builder — completed, merged, and main CI verified**
+**System #7 — Growth & Awareness — completed, merged, and main CI verified**
 
 ## Completed
-- [x] Systems #1–#5 completed and verified on `main`
-- [x] System #6 problem/need and existing-solution discovery boundaries
-- [x] Tool specification, artifact, build, sandbox, deployment, rollback, and lifecycle contracts
-- [x] Versioned thread-safe tool registry
-- [x] Replaceable builder/discovery/deployment providers
-- [x] Static fail-closed sandbox validation
-- [x] Fail-closed permission boundary for tool creation
-- [x] Health/lifecycle records and event/audit hooks
-- [x] System #6 regression tests
-- [x] PR #4 merged into `main`
-- [x] Branch CI passed (run #135)
-- [x] Post-merge `main` CI passed (run #136)
+- [x] Systems #1–#6 completed and verified on `main`
+- [x] Audience and demand signal contracts
+- [x] Value-first growth scoring and decision policy
+- [x] Useful awareness planning with destination suggestions
+- [x] Distribution discovery and partnership provider boundaries
+- [x] Thread-safe, per-scope growth storage
+- [x] Fail-closed low-confidence/no-value behavior
+- [x] Growth event hooks and provider-independent architecture
+- [x] System #7 regression tests
+- [x] PR #5 merged into `main`
+- [x] Branch CI passed (run #140)
+- [x] Post-merge `main` CI passed (run #141)
 
 ## Architecture
-System #6 is a bounded capability-builder layer. It discovers or reuses solutions before building, represents tools with stable contracts, builds through replaceable providers, validates generated source in a controlled sandbox, and exposes deployment/rollback and health boundaries. Tool creation is not unrestricted self-modification and does not grant authority over credentials, money, the host, or production systems.
+System #7 is the growth intelligence layer. It observes audience needs, unanswered questions, demand, distribution opportunities, feedback, and partnership signals; scores them using evidence and confidence; chooses whether useful awareness is warranted; and produces bounded plans for downstream distribution. Growth does not override truth, conversation, distribution, permissions, or owner authority.
 
 ## Security Considerations
-- Generated/external source is untrusted data.
-- Default sandbox performs static validation and does not execute generated code.
-- Imports, attribute access, dynamic calls, and common dynamic execution primitives are rejected.
-- Tool risk is explicit; default service authorizes only low-risk tools.
-- Deployment is provider-injected and fails closed without a provider.
-- No credentials/secrets in tool artifacts.
-- No unrestricted self-modification.
-- Free-first/provider-independent boundaries preserved.
+- External audience/community content remains untrusted data.
+- Low-confidence or low-value signals default to silence/research rather than forced growth.
+- Growth destinations are suggestions, not publishing permissions.
+- System #5 remains responsible for distribution policy, rate limits, and platform permissions.
+- Per-scope storage prevents cross-channel growth-context contamination.
+- Partnership/distribution providers are replaceable and do not grant authority.
+- No fake engagement, spam, deceptive identity, vote manipulation, or growth-at-all-costs behavior.
+- Monetization remains System #8 and must not influence truth or relevance.
 
 ## Test Status
-Branch CI run #135 passed. PR #4 merged with merge commit `7dfb4f6194f49dcc7c5529efa836b78e67cd37a6`. Fresh `main` CI run #136 passed.
+Branch CI run #140 passed. PR #5 merged with merge commit `d61347113cc5f78527781f64b50afc4c51bb2371`. Fresh `main` CI run #141 passed.
 
-## Changed Files In System #6
-- `devintel/modules/tool_builder/__init__.py`
-- `devintel/modules/tool_builder/contracts.py`
-- `devintel/modules/tool_builder/registry.py`
-- `devintel/modules/tool_builder/sandbox.py`
-- `devintel/modules/tool_builder/builder.py`
-- `devintel/modules/tool_builder/deployment.py`
-- `devintel/modules/tool_builder/service.py`
-- `devintel/modules/tool_builder/lifecycle.py`
-- `tests/test_tool_builder_system6.py`
+## Changed Files In System #7
+- `devintel/modules/growth/__init__.py`
+- `devintel/modules/growth/contracts.py`
+- `devintel/modules/growth/store.py`
+- `devintel/modules/growth/providers.py`
+- `devintel/modules/growth/policy.py`
+- `devintel/modules/growth/engine.py`
+- `devintel/modules/growth/partnerships.py`
+- `tests/test_growth_system7.py`
 - `DEVINTEL_STATUS.md`
 
 ## Important Architectural Decisions
-- Reuse existing solutions before generating new tools.
-- Tool generation is bounded and permission-controlled.
-- Generated code never receives unrestricted host authority.
-- Deployment is an adapter, not built-in production privilege.
-- Lifecycle updates remain observable and reversible.
+- Growth measures useful demand and awareness opportunities, not vanity engagement.
+- Evidence and confidence influence growth decisions; commercial value does not override truth.
+- Silence is a valid growth outcome when value is insufficient.
+- Growth proposes distribution; System #5 retains platform authority and publishing controls.
+- Scope isolation is mandatory.
+- Provider adapters remain replaceable and free-first.
 - Monetization remains System #8.
 
 ## Latest Commit
-`7dfb4f6194f49dcc7c5529efa836b78e67cd37a6` — merged System #6. This status checkpoint is the post-merge update.
+`d61347113cc5f78527781f64b50afc4c51bb2371` — merged System #7. Status checkpoint follows the verified merge.
 
 ## Next Action
-Begin **System #7 — Growth & Awareness** only from the latest verified `main` state. Preserve all completed-system contracts and security boundaries.
+Begin **System #8 — Opportunity & Business** only from the latest verified `main` state. Preserve all completed-system contracts, truth rules, security boundaries, owner control, and free-first constraints.
 
 ## Handoff Protocol
 **PULL → READ → INSPECT → TEST → MODIFY → TEST → COMMIT → UPDATE STATUS → PUSH**
