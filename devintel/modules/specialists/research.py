@@ -4,10 +4,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Protocol
 
-from ..plugins.contracts import PluginAction, PluginManifest, PluginRisk, PluginResult
+from ..plugins.contracts import PluginAction, PluginManifest, PluginRisk
 from ..plugins.service import PluginService
 from ..research.contracts import ResearchCandidate, ResearchDocument
-from ..research.pipeline import ResearchBatch, ResearchPipeline, SourceProvider
+from ..research.pipeline import ResearchBatch, ResearchPipeline
 
 
 @dataclass(frozen=True)
@@ -43,6 +43,7 @@ class ResearchSpecialist:
                 risk=PluginRisk.LOW,
             )
         )
+        self.attach()
 
     def execute(self, scope_id: str, query: str, provider: ResearchSource) -> ResearchSpecialistResult:
         if not isinstance(scope_id, str) or not scope_id.strip():
@@ -59,12 +60,12 @@ class ResearchSpecialist:
             risk=PluginRisk.LOW,
             reason="bounded research discovery and ingestion",
         )
-        result = self.plugins.execute(action)
-        if not result.success:
-            raise RuntimeError(result.error)
+        authorization = self.plugins.execute(action)
+        if not authorization.success:
+            raise RuntimeError(authorization.error)
         batch = self.pipeline.run(provider, query.strip())
         return ResearchSpecialistResult(scope_id.strip(), query.strip(), batch)
 
     def attach(self) -> None:
-        """Attach the host-controlled execution marker; the pipeline remains the executor."""
+        """Attach only a host-controlled capability marker; the research pipeline owns execution."""
         self.plugins.attach(self.plugin_id, lambda _: {"capability": "research"})
