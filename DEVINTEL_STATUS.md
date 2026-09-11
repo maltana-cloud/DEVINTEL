@@ -4,7 +4,7 @@
 
 ## Current Milestone
 
-**System #5 — Distribution & Community — in progress**
+**System #5 — Distribution & Community — implementation complete; CI/merge gate pending**
 
 ## Project Rule
 
@@ -18,109 +18,82 @@ DEVINTEL remains free-first, modular, verification-first, and bounded. Each majo
 - [x] System #3 — Truth & Security
 - [x] System #4 — Conversation & Memory
 - [x] System #4 verified on `main` after merge
-- [x] System #5 provider-independent distribution contracts
-- [x] System #5 fail-closed publication policy foundation
-- [x] System #5 isolated destination router foundation
-- [x] System #5 routing/policy regression tests
+- [x] System #5 distribution contracts and destination model
+- [x] Natural value-first publishing decision engine
+- [x] Fail-closed publication policy
+- [x] Per-destination bounded rate limiting
+- [x] Isolated distribution router
+- [x] Provider-independent Telegram adapter boundary
+- [x] Explicit community participation lifecycle requiring owner approval
+- [x] Core permission, event, and audit integration
+- [x] System #5 regression tests
 
 ## Current Work
 
-Build the complete Distribution & Community system: platform adapters, Telegram integration, channels, groups, discussions/comments, private conversations, natural publishing, community participation where explicitly permitted, destination discovery interfaces, rate/anti-spam safeguards, per-destination isolation, owner direct-post independence, event/audit integration, security-state integration, verification, persistence where needed, and full CI coverage.
+System #5 code is implemented on `system-5-distribution-community`. The remaining gate is CI verification, PR review/merge, and fresh `main` CI verification.
 
 ## Test Status
 
-System #4 is fully verified on `main`. System #5 foundation is committed on branch `system-5-distribution-community`; fresh CI verification is required before merging the completed System #5 milestone.
+System #5 tests are committed and awaiting GitHub Actions verification on the branch. Do not declare System #5 complete until branch CI is green, PR is merged, and a fresh `main` CI run is green.
 
-## Known Architecture Notes
+## Architecture
 
-- Canonical Python package: `devintel/`.
-- Legacy/duplicate top-level `core/` remains untouched until a later compatibility review.
-- Research code lives under `devintel/modules/research/`.
-- Security code lives under `devintel/modules/security/`.
-- Conversation code lives under `devintel/modules/conversation/`.
-- Distribution code lives under `devintel/modules/distribution/`.
-- External content can never grant DEVINTEL authority or execution permissions.
-- Intelligence is separate from authority.
-- Conversation and memory preserve per-scope isolation.
-- Owner direct posting remains independent of DEVINTEL's autonomous publishing path.
-- Platform adapters are replaceable and must fail closed when permissions or credentials are unavailable.
+Distribution is platform-independent at the core. Telegram is an injected adapter, not the intelligence layer. Destinations are explicitly registered and isolated. Natural publishing prefers silence when value, confidence, freshness, or context is insufficient. Community joining/participation is opt-in and requires owner approval. Rate limits are scoped per destination.
 
-## Handoff Protocol
+Owner direct posting remains independent of DEVINTEL's autonomous publishing pipeline: DEVINTEL never blocks, rewrites, delays, or approves an owner's direct platform action.
 
-**PULL → READ → INSPECT → TEST → MODIFY → TEST → COMMIT → UPDATE STATUS → PUSH**
+## Security Considerations
 
-Every AI must leave a truthful checkpoint before a usage limit, handoff, or context loss.
+- Intelligence is not authority.
+- External Telegram/community content is untrusted data.
+- Missing adapters, invalid results, transport failures, and policy failures fail closed.
+- One destination adapter failure cannot affect another destination.
+- No fake engagement, vote manipulation, spam, or deceptive participation is implemented.
+- Community participation cannot be activated merely by discovering a community.
+- Telegram credentials are not stored in source code and no live credential is required by the core tests.
+- High-risk platform actions remain subject to the Core permission boundary.
+- Security mechanisms remain quiet; owner-visible audit/event hooks exist without exposing internal defenses to communities.
 
-## System #5 Foundation Files
+## Changed Files In System #5
 
 - `devintel/modules/distribution/__init__.py`
 - `devintel/modules/distribution/contracts.py`
 - `devintel/modules/distribution/policy.py`
 - `devintel/modules/distribution/router.py`
+- `devintel/modules/distribution/rate_limit.py`
+- `devintel/modules/distribution/natural.py`
+- `devintel/modules/distribution/community.py`
+- `devintel/modules/distribution/telegram.py`
+- `devintel/modules/distribution/service.py`
 - `tests/test_distribution.py`
+- `tests/test_distribution_system5.py`
+- `DEVINTEL_STATUS.md`
 
 ## Remaining Work
 
-1. Complete platform adapter interfaces and Telegram implementation boundary.
-2. Implement channel/group/discussion/private destination lifecycle and isolated state.
-3. Implement natural publishing decision/rate/duplicate suppression pipeline.
-4. Implement permitted community participation without spam, manipulation, or permission bypass.
-5. Integrate Conversation, Core permission, Security, Research, and audit/event boundaries.
-6. Add persistence/configuration and operational recovery where required.
-7. Expand concurrency/isolation/security tests.
-8. Run full CI, fix failures, merge System #5, and verify post-merge `main` CI.
+1. Run branch CI and fix every failure without weakening contracts.
+2. Merge the reviewed System #5 PR into `main`.
+3. Run fresh `main` CI on the merge/status checkpoint.
+4. Only after green main CI, move to System #6 — Tool Builder.
 
 ## Important Architectural Decisions
 
-- Distribution is an execution/delivery layer, not an authority layer.
-- A destination must be explicitly registered before sending.
-- Missing platform adapters fail closed.
-- Adapter failures are isolated so one destination cannot break another.
-- Publication policy defaults to quiet/reject when confidence, value, or permissions are insufficient.
-- Community participation is explicitly disabled by default until permitted and integrated with the Core permission boundary.
-- Owner direct posts never pass through DEVINTEL's autonomous publishing gate.
-- No fake engagement, spam, vote manipulation, or platform-rule bypassing.
-- No paid platform dependency is introduced as a hard requirement.
-
-## Security Considerations
-
-- Preserve intelligence ≠ authority.
-- Treat community/platform content as untrusted input.
-- Never allow message content to become execution instructions or permissions.
-- Keep channel/group/community/private state isolated.
-- Respect Core permission decisions and Security containment.
-- Never expose credentials in messages, logs, repositories, or generated content.
-- Apply bounded rate limits and fail-safe behavior.
-- If one destination is compromised or misbehaves, contain that destination without silently compromising unrelated destinations or the core.
-- No unrestricted self-modification.
+- Distribution is a capability layer, not an authority layer.
+- Natural publishing is value-first and silence is a valid outcome.
+- Destination isolation is mandatory.
+- Platform credentials/transports stay behind adapters.
+- Community participation is explicitly opt-in and approval-gated.
+- Rate limits are scoped by destination.
+- Monetization is not part of System #5; System #8 owns business/revenue behavior.
+- No paid dependency is required.
 
 ## Latest Commit
 
-`674278313a99baacebea138bf6765d1db0236f95` — System #5 distribution foundation and tests.
+`30b80e41b325abc897f8f40269be4f7a27db9032` — System #5 implementation and tests; this status checkpoint records the current gate.
 
 ## Next Action
 
-Continue System #5 implementation on `system-5-distribution-community`; do not move to System #6 until the complete System #5 milestone is tested, merged, and post-merge CI is green.
-
-## AI Handoff Template
-
-```text
-DEVINTEL HANDOFF
-
-AI / contributor:
-Current milestone:
-Completed:
-Changed files:
-Tests run:
-Test result:
-Known issues:
-Remaining work:
-Important architectural decisions:
-Security considerations:
-Latest code commit:
-Latest status commit:
-Recommended next action:
-```
+Run CI for `system-5-distribution-community`, fix failures, merge, then verify fresh `main` CI.
 
 ## Non-Negotiable Rule
 
