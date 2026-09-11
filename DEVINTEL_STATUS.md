@@ -1,63 +1,41 @@
 # DEVINTEL STATUS
 
 ## Current Milestone
-**System #7 — Growth & Awareness — completed, merged, and main CI verified**
+**System #9 — Reinvestment & Strategy — in progress**
 
 ## Completed
-- [x] Systems #1–#6 completed and verified on `main`
-- [x] Audience and demand signal contracts
-- [x] Value-first growth scoring and decision policy
-- [x] Useful awareness planning with destination suggestions
-- [x] Distribution discovery and partnership provider boundaries
-- [x] Thread-safe, per-scope growth storage
-- [x] Fail-closed low-confidence/no-value behavior
-- [x] Growth event hooks and provider-independent architecture
-- [x] System #7 regression tests
-- [x] PR #5 merged into `main`
-- [x] Branch CI passed (run #140)
-- [x] Post-merge `main` CI passed (run #141)
+- [x] Systems #1–#7 completed and verified on `main`
+- [x] System #8 Opportunity & Business foundation completed
+- [x] System #8 PR #6 merged into `main`
+- [x] System #8 branch CI passed (run #145)
+- [x] System #8 fresh `main` CI passed (run #146)
+- [x] Commercial opportunity, offer, revenue, and approval contracts
+- [x] Value-first commercial ranking independent of price/revenue
+- [x] Fail-closed payment-provider boundary
+- [x] Revenue transaction deduplication
 
 ## Architecture
-System #7 is the growth intelligence layer. It observes audience needs, unanswered questions, demand, distribution opportunities, feedback, and partnership signals; scores them using evidence and confidence; chooses whether useful awareness is warranted; and produces bounded plans for downstream distribution. Growth does not override truth, conversation, distribution, permissions, or owner authority.
+System #8 provides the commercial foundation: evidence-backed business opportunities, product offers, revenue records, value-first recommendations, owner approval for high-risk commercial actions, and provider-independent payment boundaries. It does not grant authority to spend, withdraw, or enter agreements. Live payment-provider adapters remain a later integration task.
+
+System #9 is the strategy layer. It will analyze costs, revenue, bottlenecks, ROI, domains, channels, providers, and resource constraints; produce bounded reinvestment and expansion/retirement recommendations; and keep all financial/resource commitments approval-gated.
 
 ## Security Considerations
-- External audience/community content remains untrusted data.
-- Low-confidence or low-value signals default to silence/research rather than forced growth.
-- Growth destinations are suggestions, not publishing permissions.
-- System #5 remains responsible for distribution policy, rate limits, and platform permissions.
-- Per-scope storage prevents cross-channel growth-context contamination.
-- Partnership/distribution providers are replaceable and do not grant authority.
-- No fake engagement, spam, deceptive identity, vote manipulation, or growth-at-all-costs behavior.
-- Monetization remains System #8 and must not influence truth or relevance.
+- Strategy is intelligence, not authority.
+- No automatic unrestricted spending, withdrawals, or financial commitments.
+- High/critical resource commitments require owner approval.
+- Free-first operation remains mandatory until genuine revenue can safely fund scaling.
+- Revenue must never override truth, relevance, or security decisions.
+- Strategy recommendations must respect System #3 security state and existing permissions.
+- Cross-scope contamination is prohibited.
 
 ## Test Status
-Branch CI run #140 passed. PR #5 merged with merge commit `d61347113cc5f78527781f64b50afc4c51bb2371`. Fresh `main` CI run #141 passed.
-
-## Changed Files In System #7
-- `devintel/modules/growth/__init__.py`
-- `devintel/modules/growth/contracts.py`
-- `devintel/modules/growth/store.py`
-- `devintel/modules/growth/providers.py`
-- `devintel/modules/growth/policy.py`
-- `devintel/modules/growth/engine.py`
-- `devintel/modules/growth/partnerships.py`
-- `tests/test_growth_system7.py`
-- `DEVINTEL_STATUS.md`
-
-## Important Architectural Decisions
-- Growth measures useful demand and awareness opportunities, not vanity engagement.
-- Evidence and confidence influence growth decisions; commercial value does not override truth.
-- Silence is a valid growth outcome when value is insufficient.
-- Growth proposes distribution; System #5 retains platform authority and publishing controls.
-- Scope isolation is mandatory.
-- Provider adapters remain replaceable and free-first.
-- Monetization remains System #8.
+System #8 branch CI run #145 passed. PR #6 merged with merge commit `cd5c493231373d9cf3b163fb69d89a715ce2c259`. Fresh `main` CI run #146 passed.
 
 ## Latest Commit
-`d61347113cc5f78527781f64b50afc4c51bb2371` — merged System #7. Status checkpoint follows the verified merge.
+`cd5c493231373d9cf3b163fb69d89a715ce2c259` — merged System #8. Status checkpoint follows the verified merge.
 
 ## Next Action
-Begin **System #8 — Opportunity & Business** only from the latest verified `main` state. Preserve all completed-system contracts, truth rules, security boundaries, owner control, and free-first constraints.
+Build **System #9 — Reinvestment & Strategy** on branch `system-9-reinvestment-strategy`. Preserve all completed-system contracts, truth rules, security boundaries, owner control, and free-first constraints.
 
 ## Handoff Protocol
 **PULL → READ → INSPECT → TEST → MODIFY → TEST → COMMIT → UPDATE STATUS → PUSH**
