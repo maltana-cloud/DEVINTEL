@@ -19,6 +19,7 @@
 - [x] Education Specialist added behind the plugin boundary
 - [x] Education Specialist exported through the specialist layer
 - [x] Education regression tests added for evidence quality, scope isolation, progress-aware planning, and premium/free course handling
+- [x] Education specialist regression tests added for plugin execution and scope validation
 - [x] No education component grants publishing, payment, deployment, community-join, security, spending, withdrawal, or owner authority
 
 ## Education & Mentorship Capability
@@ -64,10 +65,10 @@ Revenue model is locked as legitimate value creation, not pay-to-influence intel
 - Free-first remains mandatory.
 
 ## Latest Commit
-`34317ae51630c6f072ce6c92cd283f06ff6cb1e5` — education specialist exported into main after the initial Education & Mentorship foundation.
+`eedd299186ca91da721d09b9bde3b5e9400d8712` — added Education Specialist regression tests on the education-complete-v1 branch.
 
 ## Next Action
-Integrate Education Specialist with the provider registry, then connect education to Conversation/Memory, Research/Truth, Opportunity, Tool Builder, Growth, Business, Strategy, Distribution, and Monitoring through explicit provider adapters. Build natural channel-specific teaching and mentorship behavior before live monetization/payment adapters. Keep all external providers replaceable, free-first, permission-controlled, verified, and isolated.
+Merge this education foundation, then connect Education Specialist with the provider registry and the existing Conversation/Memory, Research/Truth, Opportunity, Tool Builder, Growth, Business, Strategy, Distribution, and Monitoring boundaries through explicit adapters. Build natural channel-specific teaching/mentorship behavior before live payment adapters. Keep all external providers replaceable, free-first, permission-controlled, verified, and isolated.
 
 ## Handoff Protocol
 **PULL → READ → INSPECT → TEST → MODIFY → TEST → COMMIT → UPDATE STATUS → PUSH**
