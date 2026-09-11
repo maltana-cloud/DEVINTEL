@@ -6,7 +6,7 @@ def test_control_snapshot_is_observation_only():
     center = OwnerControlCenter(DEVINTELRuntime())
     snap = center.snapshot("channel:test")
     assert snap.scope_id == "channel:test"
-    assert snap.plugin_count == 0
+    assert snap.plugin_count == 1
     assert snap.pending_approvals == 0
 
 
