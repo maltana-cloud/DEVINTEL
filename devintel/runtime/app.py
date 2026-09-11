@@ -4,6 +4,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+from ..autonomy.engine import AutonomousEngine, Observer, Planner, Verifier, Recorder
 from ..control.service import OwnerControlCenter
 from ..core.audit import AuditLog
 from ..core.orchestrator import Orchestrator
@@ -40,6 +41,9 @@ class DEVINTELRuntime:
 
     def execute(self, request: Any, *, owner_approved: bool = False, value: float = 0.0):
         return self.orchestrator.execute(request, owner_approved=owner_approved, value=value)
+
+    def autonomous_engine(self, observer: Observer, planner: Planner, verifier: Verifier, recorder: Recorder | None = None) -> AutonomousEngine:
+        return AutonomousEngine(self.orchestrator, observer, planner, verifier, recorder)
 
     def snapshot(self, scope_id: str) -> RuntimeSnapshot:
         if not isinstance(scope_id, str) or not scope_id.strip():
