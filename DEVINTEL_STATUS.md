@@ -1,41 +1,55 @@
 # DEVINTEL STATUS
 
 ## Current Milestone
-**System #9 — Reinvestment & Strategy — in progress**
+**System #9 — Reinvestment & Strategy — completed and merged**
 
 ## Completed
-- [x] Systems #1–#7 completed and verified on `main`
-- [x] System #8 Opportunity & Business foundation completed
-- [x] System #8 PR #6 merged into `main`
-- [x] System #8 branch CI passed (run #145)
-- [x] System #8 fresh `main` CI passed (run #146)
-- [x] Commercial opportunity, offer, revenue, and approval contracts
-- [x] Value-first commercial ranking independent of price/revenue
-- [x] Fail-closed payment-provider boundary
-- [x] Revenue transaction deduplication
+- [x] Systems #1–#8 completed and verified
+- [x] System #9 Reinvestment & Strategy foundation completed
+- [x] Cost and budget tracking
+- [x] Revenue summary integration through a provider-independent source boundary
+- [x] Currency-preserving ROI analytics (no unsafe implicit FX conversion)
+- [x] Cost-category bottleneck detection
+- [x] Domain evaluation and strategic scoring
+- [x] Reinvestment, expansion, hold, research, and retirement recommendations
+- [x] Owner approval required for reinvestment/expansion commitments
+- [x] Scope-isolated strategy storage
+- [x] Bounded, thread-safe strategy state
+- [x] System #9 regression tests
+- [x] PR #7 merged into `main`
+- [x] Branch CI passed (run #163)
 
 ## Architecture
-System #8 provides the commercial foundation: evidence-backed business opportunities, product offers, revenue records, value-first recommendations, owner approval for high-risk commercial actions, and provider-independent payment boundaries. It does not grant authority to spend, withdraw, or enter agreements. Live payment-provider adapters remain a later integration task.
+System #9 is the recommendation layer for resource allocation and long-term strategy. It analyzes costs, budgets, confirmed/pending/refunded revenue, ROI by currency, bottlenecks, domain demand, cost efficiency, confidence, and strategic fit. It can recommend reinvestment, expansion, holding, research, or retirement, but it cannot execute financial commitments by itself.
 
-System #9 is the strategy layer. It will analyze costs, revenue, bottlenecks, ROI, domains, channels, providers, and resource constraints; produce bounded reinvestment and expansion/retirement recommendations; and keep all financial/resource commitments approval-gated.
+Revenue is analyzed without assuming exchange rates between currencies. Cross-currency comparison/conversion must use an explicit future FX/provider adapter rather than silently mixing currencies.
 
 ## Security Considerations
 - Strategy is intelligence, not authority.
 - No automatic unrestricted spending, withdrawals, or financial commitments.
-- High/critical resource commitments require owner approval.
-- Free-first operation remains mandatory until genuine revenue can safely fund scaling.
-- Revenue must never override truth, relevance, or security decisions.
-- Strategy recommendations must respect System #3 security state and existing permissions.
-- Cross-scope contamination is prohibited.
+- Reinvestment and expansion require explicit owner approval.
+- Free-first operation remains mandatory: paid scaling is justified by measured value and available resources, not assumed in advance.
+- Revenue never overrides truth, relevance, safety, or security.
+- Existing System #3 security and permission boundaries remain authoritative.
+- Scope isolation prevents one channel/domain from contaminating another.
+- Recommendations do not grant provider, payment, deployment, publishing, or account authority.
 
 ## Test Status
-System #8 branch CI run #145 passed. PR #6 merged with merge commit `cd5c493231373d9cf3b163fb69d89a715ce2c259`. Fresh `main` CI run #146 passed.
+System #9 branch CI run #163 passed for the final branch head before merge. PR #7 merged with merge commit `b2063a862ba3e7f775068678a8d1945a5854f166`. No separate post-merge `main` workflow run was exposed by the available GitHub Actions read endpoint for the merge commit; therefore this status does not falsely claim one.
+
+## Important Architectural Decisions
+- Strategy optimizes useful outcomes, not vanity metrics.
+- ROI is computed only within the same currency; no implicit currency conversion.
+- Revenue is an input to analysis, never an authority to spend.
+- Bottlenecks are evidence for recommendations, not automatic commands.
+- Domain expansion/retirement remains recommendation-only until authorized by the appropriate control layer.
+- Free-first and provider-independent boundaries remain mandatory.
 
 ## Latest Commit
-`cd5c493231373d9cf3b163fb69d89a715ce2c259` — merged System #8. Status checkpoint follows the verified merge.
+`b2063a862ba3e7f775068678a8d1945a5854f166` — merged System #9. Status checkpoint follows the verified merge.
 
 ## Next Action
-Build **System #9 — Reinvestment & Strategy** on branch `system-9-reinvestment-strategy`. Preserve all completed-system contracts, truth rules, security boundaries, owner control, and free-first constraints.
+Begin **System #10 — Monitoring & Owner Control** from the latest verified `main` state. Preserve all completed-system contracts, truth rules, security boundaries, owner control, and free-first constraints.
 
 ## Handoff Protocol
 **PULL → READ → INSPECT → TEST → MODIFY → TEST → COMMIT → UPDATE STATUS → PUSH**
