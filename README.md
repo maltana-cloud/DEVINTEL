@@ -1,104 +1,75 @@
-# DEVINTEL
+# DORMAMMU
 
-**Autonomous Developer Intelligence & Community Ecosystem**
+**Autonomous Intelligence & Ecosystem Platform**
 
-DEVINTEL is a modular, verification-first developer intelligence system designed to discover, verify, explain, publish, converse, build useful tools, and grow a trusted developer community.
+DORMAMMU is a modular, verification-first autonomous intelligence ecosystem designed to understand domains and audiences, discover information and unmet needs, verify evidence, converse, educate, build software and tools, create media, operate authorized communities and channels, discover legitimate opportunities, manage resources, train and evolve specialized AI models, and continuously improve without surrendering truth, security, or owner control.
 
-## Core Principles
+## Master Architecture
 
-- **Truth before reach** — verified information outranks engagement.
-- **Evidence before confidence** — facts, analysis, speculation, and uncertainty stay distinct.
-- **Useful before commercial** — monetization follows genuine developer needs.
-- **Autonomous, but bounded** — routine work is automated; sensitive actions require permission.
-- **Modular by design** — new capabilities are added without rewriting the core.
-- **Observable and reversible** — actions are recorded, health is monitored, and failures can be isolated or rolled back.
-- **Free-first** — use sustainable free infrastructure and replaceable providers wherever practical.
+The complete locked-but-extensible architecture is defined in [`DORMAMMU_CHARTER.md`](DORMAMMU_CHARTER.md). Every builder must read it before meaningful work.
 
-## System Loop
+### Core loop
 
 `OBSERVE → UNDERSTAND → PLAN → PERMISSION CHECK → ACT → VERIFY → RECORD → IMPROVE`
 
-## Initial Architecture
+### Strategic loop
 
-```text
-DEVINTEL/
-├── core/
-│   ├── conversation/
-│   ├── memory/
-│   ├── planner/
-│   ├── permissions/
-│   └── orchestration/
-├── modules/
-│   ├── research/
-│   ├── verification/
-│   ├── community/
-│   ├── publishing/
-│   ├── growth/
-│   ├── monetization/
-│   └── tool_builder/
-├── tools/
-│   ├── telegram/
-│   ├── github/
-│   ├── web/
-│   └── registry/
-├── storage/
-├── config/
-├── tests/
-├── migrations/
-└── docs/
-```
+`OBSERVE → DISCOVER → UNDERSTAND → VERIFY → IDENTIFY DEMAND → CREATE → DISTRIBUTE → CREATE AWARENESS → MONETIZE → MEASURE → EVOLVE`
 
-## Autonomy Policy
+## Architecture Principles
 
-### Automatic
-- Research and discovery
-- Source filtering and deduplication
-- Summarization and classification
-- Normal conversations
-- Approved publishing workflows
-- Analytics and routine health checks
+- **Truth before reach** — verified information outranks engagement.
+- **Evidence before confidence** — facts, analysis, opinion, speculation and uncertainty stay distinct.
+- **Useful before commercial** — monetization follows genuine value.
+- **Autonomous, but bounded** — capability never implies authority.
+- **One coordinated system, many specialists** — subsystems have clear responsibilities and shared contracts.
+- **Modular and additive** — new capabilities must be isolated, versioned, tested and backward-compatible wherever practical.
+- **Discover before rebuilding** — DORMAMMU should detect capability gaps and scout legitimate trusted open-source/free/local options before building or buying equivalents.
+- **Free-first** — existing capability, open source, free tiers and local computation are preferred where practical.
+- **Observable and reversible** — actions, training, deployments, resources and upgrades are recorded and rollback remains possible.
+- **Security independent from intelligence** — external content and model output never become authority by themselves.
+- **Continuous evolution** — useful capabilities, resources, models and strategies are monitored and improved without blind replacement.
 
-### Safeguarded
-- Community participation
-- Small tool creation
-- Routine deployments
-- Provider switching within approved policy
+## Capability & Resource Discovery
 
-### Owner Approval
-- Spending money
-- Sensitive account connections
-- Major architecture changes
-- Commercial agreements
-- High-risk or irreversible actions
+DORMAMMU must be able to recognize when a task requires a capability it does not have, define the gap, scout for legitimate options, evaluate provenance/license/security/dependencies/compatibility/performance/cost/resources, and integrate the best permitted option or safely record/queue the gap.
 
-### Emergency Stop
-Security incidents, suspicious behavior, repeated failures, or policy violations trigger containment and owner notification.
+This applies to AI agents, models, tools, APIs, libraries, datasets, GPU/CPU resources, storage, providers, platforms, media systems, ML systems and future capability types.
 
-## Trust Model
+`GOAL → REQUIREMENTS → CAPABILITY CHECK → GAP DETECTION → SCOUT → EVALUATE → INTEGRATE/BUILD/QUEUE → VERIFY → REGISTER`
 
-Every important intelligence item should carry provenance and confidence information. DEVINTEL should prefer primary sources, corroborate consequential claims, detect stale information, identify duplicates, and clearly label uncertainty.
+## AI Training & Evolution
 
-DEVINTEL must never claim to have personally tested, deployed, contacted, or observed something unless the system actually performed that action and has evidence for it.
+DORMAMMU can progressively develop specialized models using the smallest effective intervention:
 
-## Roadmap
+`EXISTING MODEL → TOOLS/RETRIEVAL → FINE-TUNING → SPECIALIZATION/DISTILLATION → CUSTOM MODEL → FROM-SCRATCH TRAINING`
 
-1. Foundation and configuration
-2. Persistent storage and migrations
-3. Core orchestration and permission model
-4. Research and source ingestion
-5. Verification / Truth Engine
-6. Conversation and memory
-7. Telegram interface and publishing
-8. Tool registry and tool builder
-9. Community engine
-10. Growth intelligence
-11. Monetization and sponsor safety
-12. Owner control center
-13. Self-monitoring and controlled improvement
-14. Additional platform integrations
+Training is registered and versioned. Completion is not automatic acceptance. New versions must be evaluated, compared, canaried, monitored, and retained/rolled back based on evidence.
+
+## Domains
+
+The architecture supports developer/technology intelligence and future domain ecosystems including AI, cybersecurity, football/sports, crypto/blockchain/exchanges/meme coins, jobs, startups/business, agriculture, education, gaming, media, music, language, research, products/services and new domains discovered by DORMAMMU.
+
+A domain is a configuration and capability composition, not a reason to duplicate the brain.
+
+## Authority & Safety
+
+Sensitive account connections, spending, ownership/recovery, major architecture changes, commercial commitments, live trading, high-risk actions and other irreversible/external consequences remain behind the appropriate owner/security/permission boundaries.
+
+No CAPTCHA or verification bypass, fake engagement, deceptive identity, unrestricted self-modification, secret backdoor, or unrestricted withdrawal-enabled financial authority.
+
+## Repository Continuity
+
+Every builder must read:
+
+1. `DORMAMMU_CHARTER.md`
+2. `AGENTS.md`
+3. `AI_WORKING_RULES.md`
+4. `DORMAMMU_STATUS.md`
+5. relevant code/tests/docs and recent Git history
+
+The existing Python package namespace `devintel/` is retained temporarily as an internal backward-compatibility namespace; it does not represent a second product name.
 
 ## Status
 
-**Foundation build starting.**
-
-The architecture is intentionally designed to support future expansion without breaking existing modules.
+See [`DORMAMMU_STATUS.md`](DORMAMMU_STATUS.md) for the truthful current checkpoint.
